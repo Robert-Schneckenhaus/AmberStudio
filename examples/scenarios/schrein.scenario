@@ -1,0 +1,21 @@
+# Golden trace scenario (spec section 12.3): run with
+#   amberc trace examples/scenarios/schrein.scenario --check examples/scenarios/schrein.golden
+seed 12345
+script schrein.ams
+load map spannenberg_keller
+
+at 0   fire enter_tile x=3 y=4        # the shrine speaks and waits
+at 5   expect waiting say 1
+at 10  answer say
+at 30  battle_result 0                # the fight is won
+at 31  expect flag schrein_benutzt 1
+at 31  expect gold 100
+at 31  expect item I.amulett 1
+
+at 40  fire enter_tile x=3 y=4        # the second visit
+at 41  expect waiting say 1
+at 50  answer say
+
+at 60  fire enter_tile x=5 y=5        # dice tile: the seed decides
+at 65  hash
+end 70

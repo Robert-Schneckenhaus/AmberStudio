@@ -1,0 +1,19 @@
+{
+	"name": "amber-tests",
+	"sources": [
+		"Harness",
+		"Tests",
+		"../../src/Amber.Base",
+		"../../src/Amber.Graphics",
+		"../../src/Amber.Script.Common",
+		"../../src/Amber.Script",
+		"../../src/Amber.Runtime",
+		"../../src/Amber.Screens",
+		"../../src/Amber.Pack",
+		"../../src/Amber.Cook",
+		"../../src/Amber.Conformance"
+	],
+	"output": "bin/amber-tests",
+	"optimize": 1,
+	"links": []
+}

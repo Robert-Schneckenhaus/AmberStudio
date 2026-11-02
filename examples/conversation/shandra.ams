@@ -1,0 +1,40 @@
+// Keyword-Konversation im Amber-Stil. "conversation"/"topic" ist Zucker für
+// Bindungen (keyword, show_item, give_item, ...) und eine first-Gruppe mit Bedingungen auf "arg".
+
+flag ketnar_hat_erzaehlt;                 // global
+flag ruinen_bekannt;
+flag bernstein_gezeigt;
+
+map twinlake_labor {
+  npc shandra at (12, 6) {
+    greet T.shandra_hallo;
+
+    topic "Amberstar" do {
+      say(T.s_amberstar);
+      learn_word(K.marmion);              // schaltet ein neues Stichwort frei
+    }
+    topic "Marmion" when word_known(K.marmion) do {
+      say(T.s_marmion);
+    }
+    topic "Ruinen" when flag(ketnar_hat_erzaehlt) do {
+      say(T.s_ruinen);
+      set_flag(ruinen_bekannt);
+    }
+    topic "Ruinen" when not flag(ketnar_hat_erzaehlt) do {     // Reihenfolge = Vorrang
+      say(T.s_ruinen_unbekannt);
+    }
+
+    on show_item(I.bernsteinstueck) when not flag(bernstein_gezeigt) do {
+      say(T.s_bernstein);
+      give_xp(active, 200);
+      set_flag(bernstein_gezeigt);
+    }
+    on give_item(I.heiltrank_leer) do {
+      say(T.s_flasche);
+      take_item(I.heiltrank_leer, 1);
+      give_item(I.heiltrank, 1);
+    }
+
+    topic "*" do { say(T.s_default); }
+  }
+}

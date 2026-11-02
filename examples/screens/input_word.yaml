@@ -1,0 +1,11 @@
+# Worteingabe (Rätselmund). Aufruf: push_screen(S.input_word, 0, 1, W.antwortliste)
+# Ergebnis: 1 = Eingabe passt zur Antwortliste, 0 = falsch oder abgebrochen.
+screen: input_word
+extends: window_modal
+args: [words]                                  # screen-Var 0: Wortlisten-ID
+region: { at: [64, 88], size: [192, 64] }
+nodes:
+  - window: { id: frame, at: [0, 0],  size_tiles: [12, 4] }
+  - input:  { id: answer, at: [16, 16], size: [160, 10], max_length: 24, on_submit: input_word_ok }
+  - button: { id: ok,     at: [40, 40], icon: ok,     hotkey: enter, on_click: input_word_ok }
+  - button: { id: cancel, at: [120, 40], icon: cancel, hotkey: esc,   on_click: input_word_cancel }

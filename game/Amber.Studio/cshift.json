@@ -1,0 +1,28 @@
+{
+	"name": "amberstudio",
+	"sources": [
+		"Studio",
+		"../Amber.Player/Content",
+		"../Amber.Player/Editor",
+		"../Amber.Player/Screens",
+		"../Amber.Player/Game",
+		"../Amber.Player/Graphics",
+		"../Amber.Player/Tiled",
+		"../Amber.Player/Tools",
+		"../Amber.Player/Platform/Platform.csh",
+		"../Amber.Player/Platform/GameRunner.csh",
+		"../Amber.Player/Platform/Input.csh",
+		"../Amber.Player/Platform/LaunchOptions.csh",
+		"../Amber.Player/Platform/RepoPaths.csh",
+		"../../src/Amber.Base",
+		"../../src/Amber.Graphics",
+		"../../src/Amber.Script.Common",
+		"../../src/Amber.Script",
+		"../../src/Amber.Runtime",
+		"../../src/Amber.Screens",
+		"../../src/Amber.Pack",
+		"../../src/Amber.Cook"
+	],
+	"output": "bin/amberstudio",
+	"optimize": 2
+}

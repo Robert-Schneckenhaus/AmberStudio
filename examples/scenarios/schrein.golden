@@ -1,0 +1,31 @@
+tick=0 fire enter_tile x=3 y=4
+tick=0 start enter_tile chunk=Map:1 binding=0 thread=0
+tick=0 act say blocked
+tick=0 fired enter_tile threads=1
+tick=5 expect waiting say 1 ok
+tick=10 answer say 0 thread=0
+tick=10 resume thread=0 result=0
+tick=10 act battle blocked
+tick=30 answer battle 0 thread=0
+tick=30 resume thread=0 result=0
+tick=30 act give_gold
+tick=30 act give_item
+tick=30 end thread=0
+tick=31 expect flag schrein_benutzt 1 ok
+tick=31 expect gold 100 ok
+tick=31 expect item I.amulett 1 ok
+tick=40 fire enter_tile x=3 y=4
+tick=40 start enter_tile chunk=Map:1 binding=0 thread=0
+tick=40 act say blocked
+tick=40 fired enter_tile threads=1
+tick=41 expect waiting say 1 ok
+tick=50 answer say 0 thread=0
+tick=50 resume thread=0 result=0
+tick=50 end thread=0
+tick=60 fire enter_tile x=5 y=5
+tick=60 start enter_tile chunk=Map:1 binding=1 thread=0
+tick=60 act give_gold
+tick=60 end thread=0
+tick=60 fired enter_tile threads=1
+tick=65 hash crc32=0xFCCE59EC gold=101
+tick=71 hash crc32=0xFCCE59EC gold=101

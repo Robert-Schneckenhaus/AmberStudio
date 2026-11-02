@@ -1,0 +1,48 @@
+{
+	"name": "amberscript",
+	"displayName": "AmberScript",
+	"description": "Syntax highlighting, snippets and language settings for AmberScript (.ams), the event language of Amberworlds.",
+	"version": "0.1.0",
+	"publisher": "amberworlds",
+	"license": "UNLICENSED",
+	"engines": {
+		"vscode": "^1.60.0"
+	},
+	"categories": [
+		"Programming Languages",
+		"Snippets"
+	],
+	"keywords": [
+		"amberscript",
+		"ams",
+		"amberworlds"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "amberscript",
+				"aliases": [
+					"AmberScript",
+					"ams"
+				],
+				"extensions": [
+					".ams"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "amberscript",
+				"scopeName": "source.amberscript",
+				"path": "./syntaxes/amberscript.tmLanguage.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "amberscript",
+				"path": "./snippets/amberscript.json"
+			}
+		]
+	}
+}

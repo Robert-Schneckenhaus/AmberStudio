@@ -1,0 +1,179 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "AmberScript",
+	"scopeName": "source.amberscript",
+	"patterns": [
+		{ "include": "#comments" },
+		{ "include": "#strings" },
+		{ "include": "#declarations" },
+		{ "include": "#triggers" },
+		{ "include": "#arrows" },
+		{ "include": "#symbols" },
+		{ "include": "#numbers" },
+		{ "include": "#keywords" },
+		{ "include": "#constants" },
+		{ "include": "#calls" },
+		{ "include": "#operators" }
+	],
+	"repository": {
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.double-slash.amberscript",
+					"match": "//.*$"
+				},
+				{
+					"name": "comment.block.amberscript",
+					"begin": "/\\*",
+					"end": "\\*/"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.amberscript",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.amberscript",
+					"match": "\\\\[nt\"\\\\]"
+				},
+				{
+					"name": "invalid.illegal.escape.amberscript",
+					"match": "\\\\."
+				}
+			]
+		},
+		"declarations": {
+			"patterns": [
+				{
+					"comment": "map, npc, entity, group, screen, conversation, preset: the name after the keyword",
+					"match": "\\b(map|screen|npc|entity|group|conversation|preset|routine)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+					"captures": {
+						"1": { "name": "keyword.declaration.amberscript" },
+						"2": { "name": "entity.name.type.amberscript" }
+					}
+				},
+				{
+					"comment": "state slots: flag x; var y = 3;",
+					"match": "\\b(flag|var32|var)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+					"captures": {
+						"1": { "name": "storage.type.amberscript" },
+						"2": { "name": "variable.other.declaration.amberscript" }
+					}
+				}
+			]
+		},
+		"triggers": {
+			"comment": "on <trigger> [(args)] [at (x, y) | in (x, y, w, h)] -> group",
+			"match": "\\b(on)\\s+(enter_tile|leave_tile|step|examine|speak|listen|use_item|cast_spell|map_enter|map_exit|map_tick|keyword|show_item|give_item|give_gold|give_food|see_party|entity_died|join_request|interact|hour|day_change|travel_step|weather_change|flag_changed|var_changed|custom|screen_open|screen_close|screen_resume|click|hover|key|region_click|battle_end|item_gained|member_joined|member_left|level_up)\\b",
+			"captures": {
+				"1": { "name": "keyword.control.amberscript" },
+				"2": { "name": "entity.name.function.trigger.amberscript" }
+			}
+		},
+		"arrows": {
+			"comment": "-> group: the group a binding points to",
+			"match": "(->)\\s*([A-Za-z_][A-Za-z0-9_]*)",
+			"captures": {
+				"1": { "name": "keyword.operator.arrow.amberscript" },
+				"2": { "name": "entity.name.function.group.amberscript" }
+			}
+		},
+		"symbols": {
+			"comment": "table symbols: T.text, I.item, K.word ...",
+			"match": "\\b(T|I|K|W|G|M|C|S|SP|E|CL|RC|LG|AT|PIC|MUS|SND|TILE|TR|TRAP|PLACE|FX|DELTA|CH|N|PAL)(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+			"captures": {
+				"1": { "name": "support.type.symbol-prefix.amberscript" },
+				"2": { "name": "punctuation.accessor.amberscript" },
+				"3": { "name": "variable.other.constant.symbol.amberscript" }
+			}
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"comment": "time of day: 06:00",
+					"name": "constant.numeric.time.amberscript",
+					"match": "\\b[0-9]{1,2}:[0-9]{2}\\b"
+				},
+				{
+					"comment": "durations: 30t (ticks), 2s, 5min, 6h",
+					"name": "constant.numeric.duration.amberscript",
+					"match": "\\b[0-9]+(?:t|s|min|h)\\b"
+				},
+				{
+					"name": "constant.numeric.hex.amberscript",
+					"match": "\\b0[xX][0-9A-Fa-f]+\\b"
+				},
+				{
+					"comment": "relative tile values such as +1 or -1 are numbers too",
+					"name": "constant.numeric.integer.amberscript",
+					"match": "(?<![A-Za-z0-9_])[+-]?[0-9]+\\b"
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.amberscript",
+					"match": "\\b(on|when|else|do|then|once|first|at|in)\\b"
+				},
+				{
+					"name": "keyword.declaration.amberscript",
+					"match": "\\b(template|use|cond|action)\\b"
+				},
+				{
+					"name": "keyword.other.amberscript",
+					"match": "\\b(greet|topic|every|walk_to|stay|sleep)\\b|\\bbark\\b(?!\\s*\\()"
+				},
+				{
+					"name": "keyword.operator.logical.amberscript",
+					"match": "\\b(and|or|not)\\b"
+				},
+				{
+					"name": "variable.language.here.amberscript",
+					"match": "\\bhere\\b"
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"comment": "targets, entities, directions, flag modes, modifiers, chest sources",
+					"name": "constant.language.amberscript",
+					"match": "\\b(active|any|all|leader|slot[1-6]|party|up|right|down|left|keep|random|set|cleared|antimagic|no_rest|no_map_spell|chest_all|chest_gold|chest_items|chest_food)\\b"
+				}
+			]
+		},
+		"calls": {
+			"patterns": [
+				{
+					"comment": "actions",
+					"name": "support.function.action.amberscript",
+					"match": "\\b(set_flag|clear_flag|toggle_flag|set_var|add_var|set_var32|add_var32|copy_var|learn_word|teleport|set_tile|set_tile_on|spawn|despawn|move_entity|set_dir|set_light|set_weather|set_world|set_routine|set_modifier|apply_delta|give_item|take_item|give_gold|take_gold|give_food|take_food|give_xp|add_member|remove_member|heal|damage|add_condition|remove_condition|change_attr|teach_spell|move_all|battle|trap|cast_effect|say|say_picture|ask_word|ask_choice|confirm|bark|push_screen|pop_screen|replace_screen|set_node|show_node|hide_node|enable_node|disable_node|set_text|music|sfx|fade|shake|flash|play_outro|set_palette|fade_palette|advance_time|wait|raise|autosave|native)(?=\\s*\\()"
+				},
+				{
+					"comment": "conditions",
+					"name": "support.function.condition.amberscript",
+					"match": "\\b(flag|var|var32|varvar|result|arg|chance|word_known|has_item|has_member|party_class|party_race|party_lang|party_size|gold|attr|probe|hour_in|day_in|season|in_map|transport|world|spell_active|tile_is|screen_open|member_condition|near|facing|input_matches)\\b"
+				}
+			]
+		},
+		"operators": {
+			"patterns": [
+				{
+					"name": "keyword.operator.comparison.amberscript",
+					"match": "==|!=|<=|>=|<|>"
+				},
+				{
+					"name": "keyword.operator.assignment.amberscript",
+					"match": "="
+				},
+				{
+					"name": "punctuation.separator.amberscript",
+					"match": "[,;]"
+				}
+			]
+		}
+	}
+}

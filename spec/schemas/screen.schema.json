@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amberstudio.local/schemas/screen.schema.json",
+  "title": "AmberScript Screen/Prefab Definition v0",
+  "description": "Deklaratives Screen-Format. Koordinaten sind logische Pixel im 320x200-Raster (Amiga 1:1, Desktop ganzzahlig skaliert). Handler verweisen auf Regelgruppen aus .ams.",
+  "type": "object",
+  "oneOf": [
+    { "required": ["screen"], "not": { "required": ["prefab"] } },
+    { "required": ["prefab"], "not": { "required": ["screen"] } }
+  ],
+  "properties": {
+    "screen": { "$ref": "#/$defs/ident", "description": "Name des Screens (wird zur S.<name>-ID)." },
+    "prefab": { "$ref": "#/$defs/ident", "description": "Name eines wiederverwendbaren Knotenbaums." },
+    "extends": { "$ref": "#/$defs/ident", "description": "Vorlage-Screen oder -Prefab, dessen Eigenschaften und Knoten geerbt werden." },
+    "params": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ident" },
+      "maxItems": 8,
+      "description": "Nur bei prefab: Parameternamen, in Knotenwerten als $name verwendbar."
+    },
+    "args": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ident" },
+      "maxItems": 8,
+      "description": "Nur bei screen: Argumente von push_screen, im screen-Namensraum als Vars 0..n-1 verfügbar."
+    },
+    "region": { "$ref": "#/$defs/rect", "description": "Bildschirmbereich des Screens." },
+    "modal": { "type": "boolean", "default": false, "description": "Fängt alle Eingaben ab, die nicht in passthrough liegen." },
+    "transparent": { "type": "boolean", "default": false, "description": "Screen darunter bleibt sichtbar." },
+    "fade": { "enum": ["none", "in", "out", "both"], "default": "both" },
+    "passthrough": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rect" },
+      "description": "Regionen, in denen Eingaben an den Screen darunter durchgereicht werden."
+    },
+    "close_on": {
+      "type": "array",
+      "items": { "enum": ["escape", "right_click", "space"] },
+      "uniqueItems": true
+    },
+    "allow_character_select": { "type": "boolean", "default": true },
+    "allow_inventory": { "type": "boolean", "default": true },
+    "cursor": { "$ref": "#/$defs/ident", "description": "Cursor-Name aus der Cursor-Tabelle." },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "on_open": { "$ref": "#/$defs/group" },
+    "on_close": { "$ref": "#/$defs/group" },
+    "on_resume": { "$ref": "#/$defs/group" }
+  },
+  "additionalProperties": false,
+
+  "$defs": {
+    "ident": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+    "group": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+      "description": "Name einer Regelgruppe aus .ams (lokal oder global)."
+    },
+    "point": {
+      "type": "array",
+      "items": { "type": "integer" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "size": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 0 },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "rect": {
+      "type": "object",
+      "required": ["at", "size"],
+      "additionalProperties": false,
+      "properties": {
+        "at": { "$ref": "#/$defs/point" },
+        "size": { "$ref": "#/$defs/size" }
+      }
+    },
+    "dynamicText": {
+      "description": "Text-ID (T.name), Parameter ($name) oder literaler Text nur zu Entwicklungszwecken.",
+      "type": "string"
+    },
+    "common": {
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "#/$defs/ident" },
+        "at": { "$ref": "#/$defs/point" },
+        "size": { "$ref": "#/$defs/size" },
+        "layer": { "type": "integer", "minimum": 0, "maximum": 255, "default": 0 },
+        "visible": { "type": "boolean", "default": true },
+        "enabled": { "type": "boolean", "default": true },
+        "look": { "$ref": "#/$defs/ident", "description": "Name eines Looks aus dem UI-Theme (content/ui.yaml). Ohne Angabe: Standard-Look der Knotenart, sonst eingebautes Aussehen." },
+        "on_click": { "$ref": "#/$defs/group" },
+        "on_hover": { "$ref": "#/$defs/group" }
+      }
+    },
+    "node": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "container": { "$ref": "#/$defs/container" },
+        "image": { "$ref": "#/$defs/image" },
+        "picture": { "$ref": "#/$defs/image" },
+        "label": { "$ref": "#/$defs/label" },
+        "button": { "$ref": "#/$defs/button" },
+        "input": { "$ref": "#/$defs/input" },
+        "list": { "$ref": "#/$defs/list" },
+        "itemgrid": { "$ref": "#/$defs/itemgrid" },
+        "portrait": { "$ref": "#/$defs/portrait" },
+        "bar": { "$ref": "#/$defs/bar" },
+        "window": { "$ref": "#/$defs/window" },
+        "textview": { "$ref": "#/$defs/textview" },
+        "viewport": { "$ref": "#/$defs/viewport" },
+        "use": { "$ref": "#/$defs/use" }
+      },
+      "additionalProperties": false
+    },
+    "container": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "properties": {
+        "nodes": { "type": "array", "items": { "$ref": "#/$defs/node" } }
+      },
+      "unevaluatedProperties": false
+    },
+    "image": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "properties": {
+        "gfx": { "type": "string", "description": "Grafik-Name (PIC.name oder UI-Grafik)." },
+        "opaque": { "type": "boolean", "default": false }
+      },
+      "unevaluatedProperties": false
+    },
+    "label": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "properties": {
+        "text": { "$ref": "#/$defs/dynamicText" },
+        "bind": { "type": "string", "description": "Native Datenquelle oder Slot, z. B. chest.gold, party[2].hp." },
+        "align": { "enum": ["left", "center", "right"], "default": "left" },
+        "color": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "blink": { "type": "boolean", "default": false }
+      },
+      "unevaluatedProperties": false
+    },
+    "button": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "properties": {
+        "icon": { "type": "string", "description": "Icon-Name aus der UI-Grafik-Tabelle." },
+        "text": { "$ref": "#/$defs/dynamicText" },
+        "hotkey": { "type": "string", "description": "z. B. num7, esc, y, n." }
+      },
+      "unevaluatedProperties": false
+    },
+    "input": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "properties": {
+        "max_length": { "type": "integer", "minimum": 1, "maximum": 64 },
+        "bind": { "type": "string" },
+        "on_submit": { "$ref": "#/$defs/group" }
+      },
+      "unevaluatedProperties": false
+    },
+    "list": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "properties": {
+        "rows": { "type": "integer", "minimum": 1, "description": "Zeilen je Spalte." },
+        "columns": { "type": "integer", "minimum": 1, "default": 1, "description": "Spalten; die Einträge füllen jede Spalte von oben nach unten." },
+        "source": { "type": "string", "description": "Native Quelle der Zeilen, z. B. party.words, party.items." },
+        "on_select": { "$ref": "#/$defs/group", "description": "Gruppe für Enter oder Klick auf eine Zeile; der Wert der Zeile kommt als trigger_arg." }
+      },
+      "unevaluatedProperties": false
+    },
+    "itemgrid": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "required": ["cols", "rows", "source"],
+      "properties": {
+        "cols": { "type": "integer", "minimum": 1 },
+        "rows": { "type": "integer", "minimum": 1 },
+        "source": { "type": "string", "description": "Native Quelle, z. B. chest.items, party.items." },
+        "on_select": { "$ref": "#/$defs/group", "description": "Gruppe für Enter oder Klick auf einen Platz; der Gegenstand kommt als trigger_arg." },
+        "on_drop": { "$ref": "#/$defs/group", "description": "Gruppe, wenn ein Gegenstand aus einem anderen Raster hierher gezogen wird; der Gegenstand kommt als trigger_arg." }
+      },
+      "unevaluatedProperties": false
+    },
+    "portrait": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "required": ["slot"],
+      "properties": {
+        "slot": { "type": "integer", "minimum": 1, "maximum": 6 }
+      },
+      "unevaluatedProperties": false
+    },
+    "bar": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "required": ["kind", "slot"],
+      "properties": {
+        "kind": { "enum": ["hp", "sp"] },
+        "slot": { "type": "integer", "minimum": 1, "maximum": 6 }
+      },
+      "unevaluatedProperties": false
+    },
+    "window": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "required": ["size_tiles"],
+      "properties": {
+        "size_tiles": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1 },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Innenmaß in 16-Pixel-Kacheln (Rahmen wie im Amber-Layout)."
+        },
+        "dark": { "type": "boolean", "default": false },
+        "nodes": { "type": "array", "items": { "$ref": "#/$defs/node" } }
+      },
+      "unevaluatedProperties": false
+    },
+    "textview": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "properties": {
+        "text": { "$ref": "#/$defs/dynamicText" },
+        "source": { "type": "string", "description": "Natives Textziel, z. B. current_text." },
+        "paged": { "type": "boolean", "default": true }
+      },
+      "unevaluatedProperties": false
+    },
+    "viewport": {
+      "allOf": [ { "$ref": "#/$defs/common" } ],
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["map2d", "map3d", "battle"] }
+      },
+      "unevaluatedProperties": false
+    },
+    "use": {
+      "type": "object",
+      "required": ["prefab"],
+      "properties": {
+        "prefab": { "$ref": "#/$defs/ident" },
+        "at": { "$ref": "#/$defs/point" },
+        "params": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": false
+    }
+  }
+}

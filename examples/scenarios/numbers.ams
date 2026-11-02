@@ -1,0 +1,108 @@
+// Script of the golden trace scenario numbers.scenario: variables, comparisons, events with negative values, a full queue.
+flag global_an;
+var global_zahl;
+
+map lager {
+  flag a;
+  flag b;
+  var x;
+  var y;
+  var32 gross;
+  var32 klein;
+
+  on enter_tile at (1, 1) -> flags;
+  group flags all {
+    do { toggle_flag(a); }
+    when flag(a) do { set_flag(b); set_flag(global_an); }
+    when not flag(a) do { clear_flag(b); toggle_flag(global_an); }
+  }
+
+  // variables: copy, compare two variables, negative numbers
+  on enter_tile at (2, 2) -> zahlen;
+  group zahlen all {
+    do { set_var(x, -7); copy_var(y, x); add_var(y, -3); set_var(global_zahl, 10); }
+    when x > y do { give_gold(1); }
+    when x < y do { give_gold(2); }
+    when x == -7 and y == -10 do { give_gold(4); }
+    when y <= -10 or x >= 0 do { give_gold(8); }
+    when global_zahl != 10 do { give_gold(16); }
+  }
+
+  // 32 bit variables: negative values, both directions of the clamp
+  on enter_tile at (3, 3) -> gross_klein;
+  group gross_klein {
+    do {
+      set_var32(gross, -2147483000); add_var32(gross, -1000);
+      set_var32(klein, 5); add_var32(klein, -12);
+    }
+    then vergleich;
+  }
+  group vergleich all {
+    when gross < 0 do { give_gold(1); }
+    when klein == -7 do { give_gold(2); }
+    when gross >= -2147483648 do { give_gold(4); }
+  }
+
+  // events carry their value as the argument, also negative ones
+  on enter_tile at (4, 4) -> senden;
+  group senden { do { raise(signal, -5); raise(signal, 300); raise(signal, 0); } }
+  on custom(signal) -> empfangen;
+  group empfangen all {
+    when arg < 0 do { give_gold(10); }
+    when arg == 300 do { give_gold(100); }
+    when arg == 0 do { give_gold(1000); }
+  }
+
+  // more events than the queue holds: the rest is dropped
+  on enter_tile at (5, 5) -> flut;
+  group flut {
+    do {
+      raise(welle, 1);
+      raise(welle, 2);
+      raise(welle, 3);
+      raise(welle, 4);
+      raise(welle, 5);
+      raise(welle, 6);
+      raise(welle, 7);
+      raise(welle, 8);
+      raise(welle, 9);
+      raise(welle, 10);
+      raise(welle, 11);
+      raise(welle, 12);
+      raise(welle, 13);
+      raise(welle, 14);
+      raise(welle, 15);
+      raise(welle, 16);
+      raise(welle, 17);
+      raise(welle, 18);
+      raise(welle, 19);
+      raise(welle, 20);
+      raise(welle, 21);
+      raise(welle, 22);
+      raise(welle, 23);
+      raise(welle, 24);
+      raise(welle, 25);
+      raise(welle, 26);
+      raise(welle, 27);
+      raise(welle, 28);
+      raise(welle, 29);
+      raise(welle, 30);
+      raise(welle, 31);
+      raise(welle, 32);
+      raise(welle, 33);
+      raise(welle, 34);
+      raise(welle, 35);
+      raise(welle, 36);
+      raise(welle, 37);
+      raise(welle, 38);
+      raise(welle, 39);
+      raise(welle, 40);
+    }
+  }
+  on custom(welle) -> welle_da;
+  group welle_da { do { add_var(x, 1); } }
+
+  // a screen opened with the nowait flag does not block, one without does
+  on enter_tile at (6, 6) -> fenster;
+  group fenster { do { push_screen(S.info, 1, 0); give_gold(1); push_screen(S.info, 0, 0); give_gold(2); } }
+}

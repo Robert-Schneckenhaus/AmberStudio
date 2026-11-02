@@ -1,0 +1,16 @@
+# Truhe. Aufruf: push_screen(S.chest, 0, 1, <Truhen-Nr>)
+# Das Item-Raster ist ein natives Drag-and-Drop-Widget; nur die Knopf-Verdrahtung ist Skript.
+screen: chest
+extends: window_modal
+args: [chest]                                  # screen-Var 0: Truhen-ID
+region: { at: [16, 40], size: [288, 128] }
+close_on: [escape, right_click]
+on_open: chest_refresh
+nodes:
+  - window:   { id: frame, at: [0, 0], size_tiles: [18, 8] }
+  - itemgrid: { id: slots, at: [24, 16], cols: 6, rows: 2, source: "chest.items" }
+  - label:    { id: gold,  at: [24, 60], bind: "chest.gold" }
+  - label:    { id: food,  at: [24, 72], bind: "chest.food" }
+  - button:   { id: take_all,  at: [24, 92],  icon: take, on_click: chest_take_all }
+  - button:   { id: take_gold, at: [56, 92],  icon: gold, on_click: chest_take_gold }
+  - button:   { id: close,     at: [232, 92], icon: exit, on_click: chest_close }

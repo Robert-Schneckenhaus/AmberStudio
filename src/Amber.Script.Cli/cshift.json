@@ -1,0 +1,17 @@
+{
+	"name": "amberc",
+	"sources": [
+		"Program.csh",
+		"../Amber.Base",
+		"../Amber.Script.Common",
+		"../Amber.Script",
+		"../Amber.Runtime",
+		"../Amber.Screens",
+		"../Amber.Pack",
+		"../Amber.Cook",
+		"../Amber.Conformance"
+	],
+	"output": "bin/amberc",
+	"optimize": 2,
+	"links": []
+}

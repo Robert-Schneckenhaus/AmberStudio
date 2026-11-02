@@ -1,0 +1,8 @@
+# Base template of the popup windows of the prototype. Screens inherit it with "extends: window_modal".
+prefab: window_modal
+modal: true
+transparent: true        # the screen below stays visible (screens override this when they cover it)
+fade: none
+allow_character_select: false
+allow_inventory: false
+close_on: [escape]

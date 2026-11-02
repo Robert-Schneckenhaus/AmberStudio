@@ -1,0 +1,17 @@
+# Conversation with an NPC (opened by the greeting of a conversation block). Call: push_screen(S.conversation, 0, 1, <entity>).
+# The list holds the words the party knows. Enter or a click asks the selected word (the keyword trigger of the NPC),
+# G gives an item and H shows an item (give_item / show_item triggers), T types a word, Esc leaves.
+screen: conversation
+extends: window_modal
+transparent: false
+args: [npc]
+region: { at: [8, 112], size: [304, 80] }
+nodes:
+  - window: { id: frame,    at: [0, 0],   size_tiles: [19, 5] }
+  - label:  { id: title,    at: [8, 4],   bind: "conversation.title", color: 1 }
+  - list:   { id: words,    at: [8, 17],  size: [288, 30], rows: 3, columns: 4, source: "party.words", on_select: ask_word }
+  - label:  { id: no_words, at: [8, 50],  bind: "party.words.hint", color: 3 }
+  - button: { id: give,     at: [8, 62],  text: T.btn_give,  hotkey: g,   on_click: give_pick }
+  - button: { id: show,     at: [80, 62], text: T.btn_show,  hotkey: h,   on_click: show_pick }
+  - button: { id: leave,    at: [152, 62], text: T.btn_leave, hotkey: esc, on_click: leave_conversation }
+  - button: { id: type,     at: [232, 62], text: T.btn_type,  hotkey: t,   on_click: type_word }

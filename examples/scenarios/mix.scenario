@@ -1,0 +1,49 @@
+# Golden trace scenario: questions, chains, "all" groups, events, numbers, timers, areas, dice, limits, conversation.
+seed 424242
+script mix.ams
+load map keller
+
+at 0   fire enter_tile x=1 y=1        # the question waits
+at 2   fire enter_tile x=1 y=1        # the same binding runs already: skipped
+at 3   answer confirm 1
+at 5   expect flag lampe 1
+at 5   expect gold 10
+
+at 10  fire enter_tile x=2 y=2        # all: counter 1, no door, lamp lit: a coin, gold 10 - 5
+at 12  expect item I.muenze 1
+at 12  expect gold 5
+at 13  fire enter_tile x=2 y=2        # counter 2: the door opens and the event chain follows
+at 20  expect flag tuer 1
+at 20  expect item I.schluessel 1
+at 20  expect gold 100
+
+at 30  fire enter_tile x=3 y=3        # numbers
+at 32  expect var zaehler 32767
+at 32  expect var32 beute 2147483647
+at 32  expect gold 1100
+
+at 40  fire hour param=3              # wait 3 and 2 ticks
+at 42  expect gold 1101
+at 44  expect gold 1103
+at 46  expect gold 1107
+
+at 50  fire enter_tile x=11 y=11 ox=5 oy=5      # crossing into the area
+at 51  fire enter_tile x=12 y=12 ox=11 oy=11    # inside both: nothing
+at 51  expect item I.muenze 4
+at 52  fire leave_tile x=11 y=11 ox=5 oy=5      # crossing out
+at 53  expect item I.muenze 3
+
+at 60  fire enter_tile x=4 y=4
+at 61  fire enter_tile x=4 y=4
+at 62  fire enter_tile x=4 y=4
+at 63  fire enter_tile x=4 y=4
+
+at 70  fire enter_tile x=6 y=6        # endless chain: the limit stops it
+at 75  fire enter_tile x=7 y=7        # autosave
+
+at 80  fire keyword entity=oma param=K.hallo arg=K.hallo
+at 82  answer say
+at 84  expect word K.wetter 1
+at 85  fire keyword entity=oma param=K.wetter arg=K.wetter
+at 90  hash
+end 100

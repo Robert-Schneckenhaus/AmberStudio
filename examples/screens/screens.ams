@@ -1,0 +1,22 @@
+// Handler-Gruppen der Beispiel-Screens (gehören zu den YAML-Dateien gleichen Namens).
+// Ein screen-Block sieht die Argumente des Screens (args) als Namen und definiert lokale Gruppen.
+
+screen confirmation {                 // args: text
+  group confirm_yes { do { pop_screen(1); } }
+  group confirm_no  { do { pop_screen(0); } }
+}
+
+screen input_word {                   // args: words
+  group input_word_ok first {
+    when input_matches(words) do { pop_screen(1); }
+    else                      do { pop_screen(0); }
+  }
+  group input_word_cancel { do { pop_screen(0); } }
+}
+
+screen chest {                        // args: chest
+  group chest_refresh   { do { set_node(gold, 0, 1); } }               // Beispiel: Gold-Label sichtbar machen
+  group chest_take_all  { do { move_all(chest_all, active); } }
+  group chest_take_gold { do { move_all(chest_gold, active); } }
+  group chest_close     { do { pop_screen(0); } }
+}

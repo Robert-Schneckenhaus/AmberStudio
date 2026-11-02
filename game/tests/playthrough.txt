@@ -1,0 +1,141 @@
+# Plays the example game through (scripts/test.sh playthrough): arrival, the sign, a conversation with Ina, the cellar
+# with the fight and the crate, Ina joins, saving and loading. The run fails (exit code 1) when an expectation is wrong.
+
+# ---- arrival --------------------------------------------------------------------------------
+wait 10
+expect map meadow
+expect at 12 12
+expect modals 1
+shot out/ex_01_arrival.png
+press Space
+wait 4
+expect modals 0
+expect word name 1
+expect word cellar 0
+
+# ---- the sign at (13, 8) --------------------------------------------------------------------
+warp 13 9
+wait 4
+hold Up 2
+wait 4
+press Space
+wait 6
+expect modals 1
+press Space
+wait 4
+expect modals 0
+expect word cellar 1
+
+# ---- Ina at (8, 8): ask about the cellar ------------------------------------------------------
+warp 9 8
+wait 4
+hold Left 2
+wait 4
+press Space
+wait 6
+press Space
+wait 6
+expect modals 1
+shot out/ex_02_conversation.png
+press T
+wait 4
+type Cellar
+wait 2
+press Enter
+wait 6
+shot out/ex_03_answer.png
+press Space
+wait 6
+press Escape
+wait 6
+expect modals 0
+expect member ina 0
+
+# ---- the cellar: down the stairs at (19, 4) ---------------------------------------------------
+warp 19 5
+wait 4
+hold Up 16
+wait 20
+expect map cellar
+expect modals 1
+press Space
+wait 4
+expect modals 0
+
+# the rats come when the party walks north; T targets the nearest one
+hold Up 32
+wait 6
+expect modals 1
+press Space
+wait 6
+press T
+wait 20
+shot out/ex_04_fight.png
+wait 600
+expect flag rats_done 1
+expect flag cellar_cleared 1
+press Space
+wait 6
+expect modals 0
+
+# the crate at (11, 2): take everything
+hp 30
+warp 11 3
+wait 4
+hold Up 2
+wait 4
+press Space
+wait 6
+expect modals 1
+shot out/ex_05_crate.png
+press A
+wait 4
+press G
+wait 4
+press Escape
+wait 6
+expect modals 0
+expect gold 20
+expect item apple 2
+expect item walking_stick 1
+
+# ---- back up, Ina joins ------------------------------------------------------------------------
+warp 6 7
+wait 4
+hold Down 16
+wait 20
+expect map meadow
+warp 9 8
+wait 4
+hold Left 2
+wait 4
+press Space
+wait 6
+press Space
+wait 6
+press T
+wait 4
+type Cellar
+wait 2
+press Enter
+wait 6
+press Space
+wait 6
+press Escape
+wait 6
+expect modals 0
+expect member ina 1
+shot out/ex_06_companion.png
+
+# ---- save (F2), change something, load (F3) ----------------------------------------------------
+press F2
+wait 4
+warp 3 7
+wait 4
+expect at 3 7
+press F3
+wait 10
+expect at 9 8
+expect member ina 1
+expect item apple 2
+quit

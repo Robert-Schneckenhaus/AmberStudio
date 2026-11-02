@@ -1,0 +1,29 @@
+// The cellar under the meadow (game/content/maps/cellar.tmx): two rats guard a crate. The battle action puts them on the
+// map; its result is 0 (won), 1 (fled) or 2 (lost).
+
+map cellar {
+  flag rats_done;
+
+  on map_enter -> arrival;
+  group arrival { once do { say(T.cellar_arrival); } }
+
+  // back up to the meadow
+  on enter_tile at (6, 8) -> up;
+  group up { do { teleport(M.meadow, 19, 5, down, 1); } }
+
+  on enter_tile in (4, 5, 6, 1) -> rats;
+  group rats first {
+    when not flag(rats_done) do { say(T.rats_appear); battle(G.rats, 0); } then rats_after;
+  }
+  group rats_after first {
+    when result == 0 do { set_flag(rats_done); set_flag(cellar_cleared); say(T.rats_won); }
+    when result == 1 do { say(T.fled); teleport(M.meadow, 19, 5, down, 1); }
+    else             do { say(T.lost); heal(all, 32767, 0); teleport(M.cellar, 6, 7, up, 1); }
+  }
+
+  on examine at (11, 2) -> crate;
+  group crate first {
+    when flag(rats_done) do { push_screen(S.chest, 0, 1, CH.cellar_crate); }
+    else                 do { say(T.crate_guarded); }
+  }
+}

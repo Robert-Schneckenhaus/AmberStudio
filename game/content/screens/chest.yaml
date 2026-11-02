@@ -1,0 +1,21 @@
+# A chest. Call: push_screen(S.chest, 0, 1, CH.name). Result: 1 if the chest is empty when it is closed, else 0.
+# Left the content of the chest, right the pack of the party, both as grids of item icons. A click or Enter on an item moves
+# it to the other side, dragging it onto the other grid does the same. The buttons take everything or the gold.
+screen: chest
+extends: window_modal
+transparent: false
+args: [chest]                                  # screen var 0: the chest
+region: { at: [8, 64], size: [304, 128] }
+nodes:
+  - window:   { id: frame,      at: [0, 0],    size_tiles: [19, 8] }
+  - label:    { id: chest_title, at: [8, 4],   text: T.chest_title, color: 1 }
+  - label:    { id: pack_title, at: [156, 4],  text: T.pack_title, color: 1 }
+  - itemgrid: { id: slots,      at: [8, 16],   size: [144, 64], cols: 7, rows: 3, source: "chest.items", on_select: take_item, on_drop: put_item }
+  - itemgrid: { id: pack,       at: [156, 16], size: [144, 64], cols: 7, rows: 3, source: "party.items", on_select: put_item, on_drop: take_item }
+  - label:    { id: slot_name,  at: [8, 84],   bind: "slots.name", color: 0 }
+  - label:    { id: pack_name,  at: [156, 84], bind: "pack.name", color: 0 }
+  - label:    { id: chest_gold, at: [8, 96],   bind: "chest.gold", color: 1 }
+  - label:    { id: party_gold, at: [156, 96], bind: "party.gold", color: 1 }
+  - button:   { id: take_all,   at: [8, 110],  text: T.btn_take_all, hotkey: a, on_click: take_all }
+  - button:   { id: take_gold,  at: [96, 110], text: T.btn_take_gold, hotkey: g, on_click: take_gold }
+  - button:   { id: close,      at: [222, 110], text: T.btn_chest_close, hotkey: esc, on_click: close }

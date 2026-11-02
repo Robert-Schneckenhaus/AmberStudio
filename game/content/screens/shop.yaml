@@ -1,0 +1,20 @@
+# A shop. Call: push_screen(S.shop, 0, 1, CH.name); the chest holds the wares of the merchant (and what the party sold).
+# Left the wares, right the pack of the party, both as grids of item icons; below the grids the name of the selected item with
+# the price (the merchant pays half). Enter or a click buys or sells one piece, dragging an item onto the other grid does the
+# same. The result is always 0.
+screen: shop
+extends: window_modal
+transparent: false
+args: [chest]                                  # screen var 0: the chest with the wares
+region: { at: [8, 64], size: [304, 128] }
+nodes:
+  - window:   { id: frame,      at: [0, 0],    size_tiles: [19, 8] }
+  - label:    { id: ware_title, at: [8, 4],    text: T.shop_wares, color: 1 }
+  - label:    { id: pack_title, at: [156, 4],  text: T.pack_title, color: 1 }
+  - itemgrid: { id: wares,      at: [8, 16],   size: [144, 64], cols: 7, rows: 3, source: "shop.items", on_select: buy_item, on_drop: sell_item }
+  - itemgrid: { id: pack,       at: [156, 16], size: [144, 64], cols: 7, rows: 3, source: "shop.pack", on_select: sell_item, on_drop: buy_item }
+  - label:    { id: ware_name,  at: [8, 84],   bind: "wares.name", color: 0 }
+  - label:    { id: pack_name,  at: [156, 84], bind: "pack.name", color: 0 }
+  - label:    { id: message,    at: [8, 96],   bind: "shop.message", color: 3 }
+  - label:    { id: party_gold, at: [8, 114],  bind: "party.gold", color: 1 }
+  - button:   { id: close,      at: [222, 110], text: T.btn_chest_close, hotkey: esc, on_click: close }

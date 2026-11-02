@@ -1,0 +1,48 @@
+// Beispiele für ein lebendigeres Dorf mit wenigen Maps:
+//   W2  Weltzustands-Varianten (Tile-Deltas)      W5  NPC-Tagesroutinen
+//   W6  Barks und Party-Kommentare                W7  reaktive Dialoge und Welt
+
+flag plage_geheilt;                       // globaler Weltzustand
+flag hochwasser;
+flag selena_kommentar_dorf;
+
+map spannenberg {
+  // W5 + W6: Bäckerin mit Tagesplan und Ausrufen
+  npc baeckerin at (10, 4) {
+    routine normal {
+      06:00 walk_to bakery_counter;  stay 6h;
+      12:00 walk_to taverne_tisch3;  stay 1h;
+      13:00 walk_to bakery_counter;
+      20:00 walk_to home_bed;        sleep;
+    }
+    routine feier { 08:00 walk_to marktplatz; stay 14h; }
+    bark T.broetchen when near(4) and hour_in(6, 10) every 2min;
+
+    // W7: Dialog hängt von Weltzustand ab
+    topic "Dorf" when flag(plage_geheilt) do { say(T.baeckerin_dorf_feier); }
+    topic "Dorf"                          do { say(T.baeckerin_dorf_krank); }
+  }
+
+  // W7: reaktive Bindungen (nur solange die Karte geladen ist) + Abgleich beim Betreten
+  on flag_changed(plage_geheilt, set) -> plage_vorbei;
+  on map_enter                        -> zustand_abgleichen;
+
+  group plage_vorbei { do { set_routine(baeckerin, feier); music(MUS.fest); } }
+
+  group zustand_abgleichen first {
+    when flag(plage_geheilt) do { set_routine(baeckerin, feier); }
+  }
+
+  // W2: Weltzustands-Variante derselben Karte (Tile-Delta-Satz aus Tabelle DELTA)
+  group hochwasser_anwenden first {
+    when flag(hochwasser) do { apply_delta(DELTA.spannenberg_flut); }
+  }
+  on map_enter -> hochwasser_anwenden;
+
+  // W6: Party-Kommentar, einmalig, ohne den Spieler zu unterbrechen
+  on enter_tile in (2, 2, 6, 6) -> dorf_kommentar;
+  group dorf_kommentar first {
+    when has_member(C.selena) and not flag(selena_kommentar_dorf)
+      do { bark(party, T.selena_kommentar_dorf); set_flag(selena_kommentar_dorf); }
+  }
+}

@@ -1,0 +1,205 @@
+# The example game of the engine: a sunny meadow with a house, a sign, a pond and Ina, who keeps an eye on the old cellar;
+# in the cellar rats guard a crate. Small on purpose: it shows maps, events, a conversation, a chest, a fight on the map, a
+# companion and saving, and the tests of the repository (game/tests) play it through. Every symbol the scripts use
+# (T.x, I.x, K.x ...) is defined here; IDs are assigned in order of appearance (starting with 1).
+
+# The maps with the name shown in the HUD; the scripts are in scripts/*.ams, the Tiled maps in maps/*.tmx (made by
+# scripts/make-example-maps.py). daylight: off keeps the colors of a map at every hour (a cellar has its own light).
+maps:
+  meadow: Sunny Meadow
+  cellar: { name: Old Cellar, daylight: off }
+
+# Where a new game starts: the map (default: the first one of maps) and the cell (default: the middle of the map).
+start: { map: meadow, x: 12, y: 12 }
+
+# Palettes (GIMP .gpl, relative to this folder) for the maps and for set_palette / fade_palette; without one the game
+# builds a palette from the tiles and figures of a map.
+palettes: {}
+
+screens:
+  - conversation
+  - textbox
+  - confirmation
+  - pick_item
+  - inventory
+  - input_word
+  - chest
+  - shop
+  - party
+
+# Native functions and data sources of the game which scripts call with native(N.name, argc, ...).
+natives:
+  - pop_arg
+  - conversation_ask
+  - conversation_give
+  - conversation_show
+  - conversation_ask_result
+  - lookup_word
+  - chest_take
+  - chest_put
+  - chest_take_all
+  - chest_take_gold
+  - chest_close
+  - shop_buy
+  - shop_sell
+  - party_give
+  - party_take_off
+
+# Where a new game starts: the map (default: the first one of maps) and the cell (default: the middle of the map).
+
+hero:
+  hp: 30
+  attack: 5
+  defense: 1
+
+# Companions (C.name) join with add_member(C.name), follow the hero and fight on their own. role: healer, mage or ranger.
+companions:
+  ina:
+    name: Ina
+    role: healer
+    hp: 20
+    attack: 2
+    defense: 1
+    range: 5
+    speed: 70
+    heal: 8
+    spells: [mend]
+
+# Spells of the companions (SP.name). kind: heal, shield, bolt or blast.
+spells:
+  mend:
+    name: Mend
+    kind: heal
+    power: 2
+    description: Mends 2 hit points more.
+
+monsters:
+  rat:
+    name: Cellar rat
+    hp: 6
+    attack: 2
+    defense: 0
+
+# Monster groups for the battle action (G.name): how many of each monster fight together.
+groups:
+  rats:
+    rat: 2
+
+# Chests (CH.name): gold and items.
+chests:
+  cellar_crate:
+    gold: 20
+    items:
+      apple: 2
+      walking_stick: 1
+
+# The words of conversations (K.name): learned with learn_word, asked in a conversation.
+keywords:
+  name: Name
+  meadow: Meadow
+  cellar: Cellar
+
+# Items. price: what a merchant asks; heal: hit points the item restores; slot: weapon or armor (attack, defense).
+items:
+  apple:
+    name: Apple
+    description: Crisp and sweet.
+    price: 2
+    heal: 6
+  walking_stick:
+    name: Walking stick
+    description: Better than bare hands.
+    attack: 1
+    slot: weapon
+    price: 5
+
+texts:
+  meadow_arrival:
+    text: "A sunny meadow. Bees hum over the flowers, and by the house a woman waves at you."
+  sign:
+    text: "The sign says: 'Old cellar - mind the rats.' An arrow points to the stairs in the east."
+  ina_greet:
+    speaker: Ina
+    text: "Hello, traveller! Lovely day, isn't it?"
+  ina_name:
+    speaker: Ina
+    text: "I'm Ina. I look after this meadow, and I patch up whoever comes out of that cellar."
+  ina_meadow:
+    speaker: Ina
+    text: "The meadow is quiet. Only the cellar gives us trouble."
+  ina_cellar:
+    speaker: Ina
+    text: "Rats have moved into the old cellar. Clear them out and I'll come along with you."
+  ina_cellar_done:
+    speaker: Ina
+    text: "You chased the rats away! As promised, I'm coming with you."
+  ina_default:
+    speaker: Ina
+    text: "Hm? Ask me about the meadow or the cellar."
+  ina_apple:
+    speaker: Ina
+    text: "An apple for me? Thank you!"
+  cellar_arrival:
+    text: "Cool, damp air. Something squeaks in the dark."
+  rats_appear:
+    text: "Two rats scurry out of the shadows!"
+  rats_won:
+    text: "The rats flee into a crack in the wall. The crate in the corner is yours now."
+  fled:
+    text: "You back away up the stairs."
+  lost:
+    text: "You wake up at the foot of the stairs, sore but alive."
+  crate_guarded:
+    text: "The rats are too close to the crate."
+  btn_yes:
+    text: "Yes"
+  btn_no:
+    text: "No"
+  btn_give:
+    text: "Give (G)"
+  btn_show:
+    text: "Show (H)"
+  btn_leave:
+    text: "Leave (Esc)"
+  btn_back:
+    text: "Back (Esc)"
+  btn_close:
+    text: "Close (I)"
+  party_title:
+    text: "Companions"
+  btn_take_off:
+    text: "Take off (U)"
+  btn_party_close:
+    text: "Close (P)"
+  give_which:
+    text: "Give which item?"
+  show_which:
+    text: "Show which item?"
+  inventory_title:
+    text: "Items"
+  btn_type:
+    text: "Type (T)"
+  btn_ok:
+    text: "OK"
+  btn_take_all:
+    text: "Take all (A)"
+  btn_take_gold:
+    text: "Take gold (G)"
+  btn_chest_close:
+    text: "Close (Esc)"
+  chest_title:
+    text: "Chest"
+  pack_title:
+    text: "Pack"
+  type_word_title:
+    text: "Type a word:"
+  word_unknown:
+    text: "Nobody knows that word."
+  word_not_learned:
+    text: "You do not know that word yet."
+  shop_wares:
+    text: "Wares"
+  shop_no_gold:
+    text: "You cannot afford that."
+  shop_not_bought:
+    text: "The merchant does not want that."

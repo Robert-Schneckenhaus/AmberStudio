@@ -1,0 +1,12 @@
+# Yes/no question. Call: push_screen(S.confirmation, 0, 1, T.question) or confirm(T.question).
+# Result: 1 = yes, 0 = no or cancelled (Escape).
+screen: confirmation
+extends: window_modal
+transparent: false
+args: [text]
+region: { at: [64, 72], size: [192, 80] }
+nodes:
+  - window:   { id: frame,   at: [0, 0],   size_tiles: [12, 5] }
+  - textview: { id: message, at: [8, 8],   size: [176, 40], source: "screen.text", paged: false }
+  - button:   { id: yes,     at: [56, 58],  text: T.btn_yes, hotkey: y, on_click: confirm_yes }
+  - button:   { id: no,      at: [108, 58], text: T.btn_no,  hotkey: n, on_click: confirm_no }

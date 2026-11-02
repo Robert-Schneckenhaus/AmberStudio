@@ -1,0 +1,49 @@
+// Presets (Spec 7.6, Stufe 2: Compile-Zeit-Ersetzung) und geteilte Gruppen (Stufe 1).
+// Keine Laufzeitkosten, kein neues Binärformat. "here" = Auslöseort der Bindung.
+
+// ---- Muster: Schalter, der ein Tile zwischen zwei Zuständen umlegt -------------------------------
+preset lever(tile_off: tile, tile_on: tile, click: sym = SND.click) on interact {
+  when tile_is(1, here, tile_off) do { set_tile(1, here, tile_on);  sfx(click); }
+  when tile_is(1, here, tile_on)  do { set_tile(1, here, tile_off); sfx(click); }
+}
+
+// ---- Muster: nächstes Tile im Tileset (Variante mit relativem Tile, siehe Spec 15 Punkt 8) -------
+preset flip(click: sym = SND.click) on interact {
+  do { set_tile(1, here, +1); sfx(click); }
+}
+
+// ---- Fragmente ----------------------------------------------------------------------------------
+preset cond   has_key(k: item) = has_item(k, 1);
+preset cond   night()          = hour_in(20, 6);
+preset action open_at(x: int, y: int, t: tile) = set_tile(1, x, y, t); sfx(SND.mechanism);
+preset action open_here(t: tile)               = set_tile(1, here, t);  sfx(SND.mechanism);   // "here" wird am Verwendungsort aufgelöst
+
+// ---- Muster mit Instanzzustand: einmaliges Geschenk ---------------------------------------------
+// "flag taken" erzeugt für jede Verwendung ein eigenes Flag (Spec 7.6, Regel 4).
+preset give_once(what: item, found: text) on examine {
+  flag taken;
+  when not flag(taken) do { give_item(what, 1); say(found); set_flag(taken); }
+  else                 do { say(T.nothing_more); }
+}
+
+// ---- Verwendung ---------------------------------------------------------------------------------
+map presets_demo {
+  use lever(TILE.lever_up, TILE.lever_down) at (12, 6);
+  use lever(TILE.lever_up, TILE.lever_down) at (30, 4);          // identisch: im Cook teilen beide dieselbe Gruppe (Stufe 3)
+  use flip() at (7, 2);
+  use give_once(I.healing_herb, T.herb_found) at (5, 9);         // eigenes Flag, keine Deduplizierung
+
+  // Fragmente in einer eigenen Gruppe (Stufe 1: mehrere Bindungen teilen sich eine Gruppe dank "here")
+  group tor first {
+    when has_key(I.tavern_key)           do { open_here(TILE.door_open); }
+    when night() and not has_key(I.tavern_key)
+                                         do { say(T.door_locked_night); }
+    else                                 do { say(T.door_locked); }
+  }
+  on interact at (12, 7) -> tor;
+  on interact at (31, 7) -> tor;                                 // zweites Tor, dieselbe Gruppe
+
+  // open_at mit festen Koordinaten für eine Tür an anderer Stelle (Fernwirkung eines Hebels)
+  group hebel_oeffnet_gitter { do { open_at(20, 3, TILE.gate_open); } }
+  on interact at (19, 3) -> hebel_oeffnet_gitter;
+}
