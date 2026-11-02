@@ -2,19 +2,21 @@
 # Builds Amber Studio as one web page (wasm) with the example game (game/content) as the project, which the studio opens
 # at the start (it looks for demo/game/content). Used by .github/workflows/pages.yml.
 #
-#   scripts/studio-page.sh <out.html>
+#   scripts/studio-page.sh <out.html> [content folder]
 #
+# A game that uses this repository (as a submodule, say) passes its own content folder; without one it is game/content.
 # The compiler is cshiftc from PATH, or the one CSHIFTC names; CSHIFT_STDLIB names a stdlib folder with the trees, tabs
 # and held keys of System.Ui (CShift after 0.41) if the compiler's own does not have them yet.
 set -e
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
-OUT=${1:?usage: studio-page.sh <out.html>}
+OUT=${1:?usage: studio-page.sh <out.html> [content folder]}
+CONTENT=${2:-$ROOT/game/content}
 CSHIFTC=${CSHIFTC:-cshiftc}
 STUDIO="$ROOT/game/Amber.Studio"
 
 rm -rf "$STUDIO/demo"
 mkdir -p "$STUDIO/demo/game"
-cp -r "$ROOT/game/content" "$STUDIO/demo/game/content"
+cp -r "$CONTENT" "$STUDIO/demo/game/content"
 rm -f "$STUDIO/demo/game/content/maps/edit_test.tmx" "$STUDIO/demo/game/content/maps/edit_test.tmx.bak"
 
 # the project of the studio with the example as assets of the page
