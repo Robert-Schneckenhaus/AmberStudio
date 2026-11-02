@@ -1,0 +1,222 @@
+tick=0 fire enter_tile x=1 y=1
+tick=0 start enter_tile chunk=Map:1 binding=0 thread=0
+tick=0 act confirm blocked
+tick=0 fired enter_tile threads=1
+tick=2 fire enter_tile x=1 y=1
+tick=2 skip start enter_tile chunk=Map:1 binding=0 (already running)
+tick=2 fired enter_tile threads=0
+tick=3 answer confirm 1 thread=0
+tick=3 resume thread=0 result=1
+tick=3 act give_gold
+tick=3 end thread=0
+tick=5 start map_tick chunk=Map:1 binding=6 thread=0
+tick=5 end thread=0
+tick=5 expect flag lampe 1 ok
+tick=5 expect gold 10 ok
+tick=10 start map_tick chunk=Map:1 binding=6 thread=0
+tick=10 end thread=0
+tick=10 fire enter_tile x=2 y=2
+tick=10 start enter_tile chunk=Map:1 binding=1 thread=0
+tick=10 act give_item
+tick=10 act take_gold
+tick=10 end thread=0
+tick=10 fired enter_tile threads=1
+tick=12 expect item I.muenze 1 ok
+tick=12 expect gold 5 ok
+tick=13 fire enter_tile x=2 y=2
+tick=13 start enter_tile chunk=Map:1 binding=1 thread=0
+tick=13 act give_item
+tick=13 act take_gold
+tick=13 end thread=0
+tick=13 fired enter_tile threads=1
+tick=14 start flag_changed chunk=Map:1 binding=2 thread=0
+tick=14 act give_item
+tick=14 end thread=0
+tick=15 start custom chunk=Map:1 binding=3 thread=0
+tick=15 act give_gold
+tick=15 end thread=0
+tick=15 start map_tick chunk=Map:1 binding=6 thread=0
+tick=15 end thread=0
+tick=20 start map_tick chunk=Map:1 binding=6 thread=0
+tick=20 end thread=0
+tick=20 expect flag tuer 1 ok
+tick=20 expect item I.schluessel 1 ok
+tick=20 expect gold 100 ok
+tick=25 start map_tick chunk=Map:1 binding=6 thread=0
+tick=25 end thread=0
+tick=30 start map_tick chunk=Map:1 binding=6 thread=0
+tick=30 end thread=0
+tick=30 fire enter_tile x=3 y=3
+tick=30 start enter_tile chunk=Map:1 binding=4 thread=0
+tick=30 act give_gold
+tick=30 end thread=0
+tick=30 fired enter_tile threads=1
+tick=32 expect var zaehler 32767 ok
+tick=32 expect var32 beute 2147483647 ok
+tick=32 expect gold 1100 ok
+tick=35 start map_tick chunk=Map:1 binding=6 thread=0
+tick=35 end thread=0
+tick=40 start map_tick chunk=Map:1 binding=6 thread=0
+tick=40 end thread=0
+tick=40 fire hour param=3
+tick=40 start hour chunk=Map:1 binding=5 thread=0
+tick=40 act give_gold
+tick=40 act wait ticks=3
+tick=40 fired hour threads=1
+tick=42 expect gold 1101 ok
+tick=43 resume thread=0 result=0
+tick=43 act give_gold
+tick=43 act wait ticks=2
+tick=44 expect gold 1103 ok
+tick=45 start map_tick chunk=Map:1 binding=6 thread=1
+tick=45 end thread=1
+tick=45 resume thread=0 result=0
+tick=45 act give_gold
+tick=45 end thread=0
+tick=46 expect gold 1107 ok
+tick=50 start map_tick chunk=Map:1 binding=6 thread=0
+tick=50 end thread=0
+tick=50 fire enter_tile x=11 y=11 ox=5 oy=5
+tick=50 start enter_tile chunk=Map:1 binding=7 thread=0
+tick=50 act give_item
+tick=50 end thread=0
+tick=50 fired enter_tile threads=1
+tick=51 fire enter_tile x=12 y=12 ox=11 oy=11
+tick=51 fired enter_tile threads=0
+tick=51 expect item I.muenze 4 ok
+tick=52 fire leave_tile x=11 y=11 ox=5 oy=5
+tick=52 start leave_tile chunk=Map:1 binding=8 thread=0
+tick=52 act take_item
+tick=52 end thread=0
+tick=52 fired leave_tile threads=1
+tick=53 expect item I.muenze 3 ok
+tick=55 start map_tick chunk=Map:1 binding=6 thread=0
+tick=55 end thread=0
+tick=60 start map_tick chunk=Map:1 binding=6 thread=0
+tick=60 end thread=0
+tick=60 fire enter_tile x=4 y=4
+tick=60 start enter_tile chunk=Map:1 binding=9 thread=0
+tick=60 act give_gold
+tick=60 end thread=0
+tick=60 fired enter_tile threads=1
+tick=61 fire enter_tile x=4 y=4
+tick=61 start enter_tile chunk=Map:1 binding=9 thread=0
+tick=61 act give_gold
+tick=61 end thread=0
+tick=61 fired enter_tile threads=1
+tick=62 fire enter_tile x=4 y=4
+tick=62 start enter_tile chunk=Map:1 binding=9 thread=0
+tick=62 act give_gold
+tick=62 end thread=0
+tick=62 fired enter_tile threads=1
+tick=63 fire enter_tile x=4 y=4
+tick=63 start enter_tile chunk=Map:1 binding=9 thread=0
+tick=63 act give_gold
+tick=63 end thread=0
+tick=63 fired enter_tile threads=1
+tick=65 start map_tick chunk=Map:1 binding=6 thread=0
+tick=65 end thread=0
+tick=70 start map_tick chunk=Map:1 binding=6 thread=0
+tick=70 end thread=0
+tick=70 fire enter_tile x=6 y=6
+tick=70 start enter_tile chunk=Map:1 binding=10 thread=0
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 act give_gold
+tick=70 abort thread: chain longer than 64 steps
+tick=70 end thread=0
+tick=70 fired enter_tile threads=1
+tick=75 start map_tick chunk=Map:1 binding=6 thread=0
+tick=75 end thread=0
+tick=75 fire enter_tile x=7 y=7
+tick=75 start enter_tile chunk=Map:1 binding=11 thread=0
+tick=75 act give_gold
+tick=75 end thread=0
+tick=75 fired enter_tile threads=1
+tick=80 start map_tick chunk=Map:1 binding=6 thread=0
+tick=80 end thread=0
+tick=80 fire keyword entity=oma param=K.hallo arg=K.hallo
+tick=80 start keyword chunk=Map:1 binding=13 thread=0
+tick=80 act say blocked
+tick=80 fired keyword threads=1
+tick=82 answer say 0 thread=0
+tick=82 resume thread=0 result=0
+tick=82 act learn_word
+tick=82 end thread=0
+tick=84 expect word K.wetter 1 ok
+tick=85 start map_tick chunk=Map:1 binding=6 thread=0
+tick=85 end thread=0
+tick=85 fire keyword entity=oma param=K.wetter arg=K.wetter
+tick=85 start keyword chunk=Map:1 binding=13 thread=0
+tick=85 act give_gold
+tick=85 end thread=0
+tick=85 fired keyword threads=1
+tick=90 start map_tick chunk=Map:1 binding=6 thread=0
+tick=90 end thread=0
+tick=90 hash crc32=0xA31002AA gold=1187
+tick=95 start map_tick chunk=Map:1 binding=6 thread=0
+tick=95 end thread=0
+tick=100 start map_tick chunk=Map:1 binding=6 thread=0
+tick=100 end thread=0
+tick=101 hash crc32=0xD00A7B20 gold=1187

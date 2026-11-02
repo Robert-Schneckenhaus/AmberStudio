@@ -1,0 +1,37 @@
+# Golden trace scenario: flags, variables, comparisons, negative values, a full event queue, nowait screens.
+seed 7
+script numbers.ams
+load map lager
+
+at 0   fire enter_tile x=1 y=1
+at 2   expect flag a 1
+at 2   expect flag b 1
+at 2   expect flag global_an 1
+at 3   fire enter_tile x=1 y=1
+at 5   expect flag a 0
+at 5   expect flag b 0
+at 5   expect flag global_an 0
+
+at 10  fire enter_tile x=2 y=2
+at 12  expect var x -7
+at 12  expect var y -10
+at 12  expect var global_zahl 10
+at 12  expect gold 13
+
+at 20  fire enter_tile x=3 y=3
+at 22  expect var32 gross -2147483648
+at 22  expect var32 klein -7
+at 22  expect gold 20
+
+at 30  fire enter_tile x=4 y=4
+at 34  expect gold 1130
+
+at 40  fire enter_tile x=5 y=5
+at 50  fire enter_tile x=5 y=5
+at 55  expect threads 0
+
+at 60  fire enter_tile x=6 y=6        # the second screen blocks the thread
+at 62  expect waiting push_screen 1
+at 63  answer push_screen
+at 65  hash
+end 70

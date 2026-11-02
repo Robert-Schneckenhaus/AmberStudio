@@ -1,0 +1,84 @@
+{
+	"Map": {
+		"prefix": "map",
+		"body": ["map ${1:name} {", "\tflag ${2:seen};", "", "\ton map_enter -> ${3:arrival};", "\tgroup ${3:arrival} { once do { say(T.${4:text}); } }", "}"],
+		"description": "A map block with a map_enter binding"
+	},
+	"Group": {
+		"prefix": "group",
+		"body": ["group ${1:name} {", "\tdo { ${2:say(T.text);} }", "}"],
+		"description": "A group with one unconditional rule"
+	},
+	"Group (first)": {
+		"prefix": "groupfirst",
+		"body": ["group ${1:name} first {", "\twhen ${2:flag(done)} do { ${3:say(T.done);} }", "\telse do { ${4:say(T.not_yet);} }", "}"],
+		"description": "A first-match group: the first rule whose conditions hold runs"
+	},
+	"Rule (when)": {
+		"prefix": "when",
+		"body": ["when ${1:flag(x)} do { ${2:say(T.text);} }"],
+		"description": "A rule with conditions"
+	},
+	"Binding (examine)": {
+		"prefix": "onexamine",
+		"body": ["on examine ${1|at,in|} (${2:x}, ${3:y}) -> ${4:group};"],
+		"description": "Bind examine to a tile (at (x, y)) or an area (in (x, y, w, h))"
+	},
+	"Binding (enter_tile)": {
+		"prefix": "onenter",
+		"body": ["on enter_tile ${1|at,in|} (${2:x}, ${3:y}) -> ${4:group};"],
+		"description": "Bind enter_tile to a tile or an area"
+	},
+	"Teleport": {
+		"prefix": "teleport",
+		"body": ["teleport(M.${1:map}, ${2:x}, ${3:y}, ${4|up,right,down,left,keep|}, ${5:1});"],
+		"description": "Teleport the party to another map"
+	},
+	"NPC": {
+		"prefix": "npc",
+		"body": [
+			"npc ${1:name} at (${2:x}, ${3:y}) {",
+			"\tgreet T.${1:name}_greet;",
+			"",
+			"\ttopic \"${4:Name}\" do { say(T.${1:name}_${5:name}); }",
+			"\ttopic \"*\" do { say(T.${1:name}_default); }",
+			"",
+			"\troutine ${6:day} {",
+			"\t\t06:00 walk_to ${7:waypoint};  stay 2h;",
+			"\t}",
+			"}"
+		],
+		"description": "An NPC with a greeting, keyword topics and a routine"
+	},
+	"Topic": {
+		"prefix": "topic",
+		"body": ["topic \"${1:Word}\" ${2:when ${3:flag(x)} }do { say(T.${4:text}); }"],
+		"description": "A conversation topic (the order of topics decides the precedence)"
+	},
+	"Routine": {
+		"prefix": "routine",
+		"body": ["routine ${1:day} {", "\t${2:06:00} walk_to ${3:waypoint};  stay ${4:2h};", "}"],
+		"description": "A daily routine of an NPC"
+	},
+	"Bark": {
+		"prefix": "bark",
+		"body": ["bark T.${1:text} when near(${2:4}) every ${3:30s};"],
+		"description": "A short remark of an NPC now and then"
+	},
+	"Quest question": {
+		"prefix": "confirmthen",
+		"body": [
+			"group ${1:ask} { do { confirm(T.${2:question}); } then ${3:answer}; }",
+			"group ${3:answer} first {",
+			"\twhen result == 1 do { ${4:set_flag(accepted);} }",
+			"\telse do { say(T.${5:declined}); }",
+			"}"
+		],
+		"description": "Ask a yes/no question and branch on the result with then"
+	},
+	"Once": {
+		"prefix": "once",
+		"body": ["once do { ${1:say(T.text);} }"],
+		"description": "A rule which runs only the first time"
+	}
+}

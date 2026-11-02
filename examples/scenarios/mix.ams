@@ -1,0 +1,85 @@
+// Script of the golden trace scenario mix.scenario: many features of the interpreter in one small map.
+flag hinweis;
+var32 gesamt;
+
+map keller {
+  flag lampe;
+  flag tuer;
+  var zaehler;
+  var32 beute;
+  var takte;
+
+  // a question: the answer (result) decides in the group after "then"
+  on enter_tile at (1, 1) -> frage;
+  group frage { do { confirm(T.frage); } then antwort; }
+  group antwort first {
+    when result == 1 do { set_flag(lampe); give_gold(10); }
+    else             do { give_gold(1); }
+  }
+
+  // "all" runs every rule whose conditions hold
+  on enter_tile at (2, 2) -> sammeln;
+  group sammeln all {
+    do { add_var(zaehler, 1); }
+    when zaehler >= 2 do { set_flag(tuer); }
+    when flag(lampe) or flag(tuer) do { give_item(I.muenze, 1); }
+    when not flag(hinweis) and gold >= 5 do { take_gold(5); }
+  }
+
+  // an event queue: flag_changed and custom events start threads in the next tick
+  on flag_changed(tuer, set) -> tuer_offen;
+  group tuer_offen { do { give_item(I.schluessel, 1); raise(alarm, 7); } }
+  on custom(alarm) -> alarm_gruppe;
+  group alarm_gruppe first {
+    when arg == 7 do { give_gold(100); }
+  }
+
+  // numbers: 32 bit variables clamp, 16 bit variables saturate, thread variables live in the thread
+  on enter_tile at (3, 3) -> rechnen;
+  group rechnen {
+    do {
+      set_var32(beute, 2147483000); add_var32(beute, 1000);
+      set_var(zaehler, 32767); add_var(zaehler, 5);
+      set_var(t0, 5); add_var(t0, 3);
+    }
+    then pruefen;
+  }
+  group pruefen first {
+    when t0 == 8 and zaehler > 30000 do { give_gold(1000); }
+  }
+
+  // timers: wait and map_tick
+  on hour(3) -> langsam;
+  group langsam { do { give_gold(1); wait(3); give_gold(2); wait(2); give_gold(4); } }
+  on map_tick(5) -> takt;
+  group takt { do { add_var(takte, 1); } }
+
+  // areas: enter and leave fire only when the border is crossed
+  on enter_tile in (10, 10, 3, 3) -> rein;
+  group rein { do { give_item(I.muenze, 2); } }
+  on leave_tile in (10, 10, 3, 3) -> raus;
+  group raus { do { take_item(I.muenze, 1); } }
+
+  // dice: the seed decides
+  on enter_tile at (4, 4) -> wuerfel;
+  group wuerfel first {
+    when chance(30) do { give_gold(3); }
+    when chance(60) do { give_gold(2); }
+    else            do { give_gold(1); }
+  }
+
+  // a conditional cycle: the chain limit ends it
+  on enter_tile at (6, 6) -> kette_a;
+  group kette_a { do { give_gold(1); } then kette_b; }
+  group kette_b first { when gold >= 0 do { give_gold(1); } then kette_a; }
+
+  // a save request at the end of the chain
+  on enter_tile at (7, 7) -> speichern;
+  group speichern { do { give_gold(1); autosave(); } }
+
+  // a conversation
+  npc oma at (5, 5) {
+    topic "Hallo" do { say(T.hallo); learn_word(K.wetter); }
+    topic "Wetter" when word_known(K.wetter) do { give_gold(5); }
+  }
+}

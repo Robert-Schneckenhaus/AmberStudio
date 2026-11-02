@@ -1,0 +1,19 @@
+# build output (cshiftc build: executables and the header import cache)
+bin/
+obj/
+out/
+
+# graphics that are not part of the repository (licensed packs): a game puts them here
+assets/
+
+# GLFW for Windows (game/Amber.Player/get-glfw.ps1)
+game/Amber.Player/lib/
+
+# copy of a map that the editor test changes, savegames
+game/content/maps/edit_test.tmx*
+game/saves/
+c/build/
+
+# Amber Studio: the example project and the project file of the web page (scripts/studio-page.sh)
+game/Amber.Studio/demo/
+game/Amber.Studio/cshift.page.json

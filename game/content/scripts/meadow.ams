@@ -1,0 +1,30 @@
+// The meadow, where the example game starts (game/content/maps/meadow.tmx): the house of Ina, a sign, a pond and the
+// stairs down to the cellar. Positions are cells of the map (x, y from the top left).
+
+flag cellar_cleared;     // the rats of the cellar are gone (global: Ina knows it)
+
+map meadow {
+  flag ina_joined;
+
+  on map_enter -> arrival;
+  group arrival { once do { say(T.meadow_arrival); learn_word(K.name); learn_word(K.meadow); } }
+
+  on examine at (13, 8) -> sign;
+  group sign { do { say(T.sign); learn_word(K.cellar); } }
+
+  // the stairs down to the cellar
+  on enter_tile at (19, 4) -> down;
+  group down { do { teleport(M.cellar, 6, 7, up, 1); } }
+
+  npc ina at (8, 8) {
+    greet T.ina_greet;
+
+    topic "Name"   do { say(T.ina_name); }
+    topic "Meadow" do { say(T.ina_meadow); learn_word(K.cellar); }
+    topic "Cellar" when flag(cellar_cleared) and not flag(ina_joined) do { say(T.ina_cellar_done); set_flag(ina_joined); add_member(C.ina); }
+    topic "Cellar" do { say(T.ina_cellar); }
+    topic "*"      do { say(T.ina_default); }
+
+    on give_item(I.apple) do { take_item(I.apple, 1); say(T.ina_apple); }
+  }
+}

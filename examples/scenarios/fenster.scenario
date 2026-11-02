@@ -1,0 +1,29 @@
+# Golden trace scenario: screens are opened and closed, get their own state and run handler groups.
+seed 3
+script fenster.ams
+load map platz
+
+at 0   fire enter_tile x=1 y=1
+at 2   open info 5              # the argument 5 is the variable "start"
+at 4   expect var info.start 5
+at 4   expect var info.klicks 5
+at 4   expect flag info.gesehen 1
+at 4   expect gold 2
+
+at 6   run info 2 2             # druck with arg 2: klicks 7
+at 8   expect var info.klicks 7
+at 9   run info 2 3             # klicks 10: the second rule fires
+at 11  expect var info.klicks 10
+at 11  expect gold 1002
+at 12  run info 2 0             # toggles the flag: cleared
+at 13  expect flag info.gesehen 0
+at 14  run info 3               # a handler which waits
+at 15  run info 3               # already running: skipped
+at 20  expect gold 1007
+
+at 22  open leer
+at 24  close leer
+at 26  close info
+at 28  expect gold 1109
+at 30  hash
+end 40

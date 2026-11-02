@@ -1,0 +1,14 @@
+# Type a word of the conversation. Call: push_screen(S.input_word, 0, 0). Result: the ID of the word, 0 if cancelled.
+# Enter runs on_submit; the host looks the typed text up (native lookup_word) and either closes the screen with the word
+# or puts a message in the data source input.message.
+screen: input_word
+extends: window_modal
+transparent: false
+region: { at: [8, 112], size: [304, 80] }
+nodes:
+  - window: { id: frame,   at: [0, 0],  size_tiles: [19, 5] }
+  - label:  { id: title,   at: [8, 4],  text: T.type_word_title, color: 1 }
+  - input:  { id: answer,  at: [8, 20], size: [200, 12], max_length: 24, on_submit: submit }
+  - label:  { id: message, at: [8, 38], bind: "input.message", color: 5 }
+  - button: { id: ok,      at: [8, 62], text: T.btn_ok, on_click: submit }
+  - button: { id: cancel,  at: [80, 62], text: T.btn_back, hotkey: esc, on_click: cancel }

@@ -1,0 +1,65 @@
+// Handlers of the screens in content/screens/*.yaml. A screen block sees the arguments of the screen (args) as names and
+// defines local groups; the YAML refers to them by name (on_click, on_select ...).
+
+screen confirmation {
+  group confirm_yes { do { pop_screen(1); } }
+  group confirm_no  { do { pop_screen(0); } }
+}
+
+// The words of a conversation are asked by the host (native), the items go through the screen pick_item; its result (the item ID)
+// comes back as "result" in the group after "then".
+screen conversation {                     // args: npc
+  group ask_word { do { native(N.conversation_ask, 0); } }
+
+  group give_pick { do { push_screen(S.pick_item, 0, 1, T.give_which); } then give_picked; }
+  group give_picked first { when result != 0 do { native(N.conversation_give, 0); } }
+
+  group show_pick { do { push_screen(S.pick_item, 0, 1, T.show_which); } then show_picked; }
+  group show_picked first { when result != 0 do { native(N.conversation_show, 0); } }
+
+  // typing a word: the input screen closes with the word (0 = cancelled or unknown)
+  group type_word { do { push_screen(S.input_word, 0, 0); } then typed_word; }
+  group typed_word first { when result != 0 do { native(N.conversation_ask_result, 0); } }
+
+  group leave_conversation { do { pop_screen(0); } }
+}
+
+screen input_word {
+  group submit { do { native(N.lookup_word, 0); } }   // closes the screen with the word or shows why not
+  group cancel { do { pop_screen(0); } }
+}
+
+// Both item grids use the same two groups: the item (trigger argument) moves to the other side. Closing tells the script
+// whether the chest is empty (result 1).
+screen chest {                            // args: chest
+  group take_item { do { native(N.chest_take, 0); } }
+  group put_item  { do { native(N.chest_put, 0); } }
+  group take_all  { do { native(N.chest_take_all, 0); } }
+  group take_gold { do { native(N.chest_take_gold, 0); } }
+  group close     { do { native(N.chest_close, 0); } }
+}
+
+screen pick_item {                        // args: title
+  group pick   { do { native(N.pop_arg, 0); } }   // closes the screen with the selected row (the item ID)
+  group cancel { do { pop_screen(0); } }
+}
+
+screen inventory {
+  group close { do { pop_screen(0); } }
+}
+
+// A shop: the item (trigger argument) is bought from the wares or sold from the pack, one piece at a time. The prices are
+// in tables.yaml (items: price), the merchant pays half.
+screen shop {                             // args: chest
+  group buy_item  { do { native(N.shop_buy, 0); } }
+  group sell_item { do { native(N.shop_sell, 0); } }
+  group close     { do { pop_screen(0); } }
+}
+
+// The companions (key P): an item of the pack (trigger argument) goes to the companion selected in the list (a weapon or
+// an armor to wear, a scroll to learn); take_off gives weapon and armor back.
+screen party {
+  group give     { do { native(N.party_give, 0); } }
+  group take_off { do { native(N.party_take_off, 0); } }
+  group close    { do { pop_screen(0); } }
+}

@@ -1,0 +1,10 @@
+# Textfenster für say(...). Aufruf (intern): push_screen(S.textbox, 0, 1, T.text_id)
+# Klick blättert; am Ende schließt der Screen selbst (natives Verhalten von "paged").
+screen: textbox
+extends: window_modal
+args: [text]
+region: { at: [16, 120], size: [288, 72] }
+close_on: []                                   # nur über das Textende schließbar
+nodes:
+  - window:   { id: frame,   at: [0, 0], size_tiles: [18, 4] }
+  - textview: { id: message, at: [8, 6], size: [272, 56], source: "screen.text", paged: true }

@@ -1,0 +1,16 @@
+// Script of the golden trace scenario schrein.scenario: a shrine in a cellar, guarded by a fight, and a dice tile.
+map spannenberg_keller {
+  flag schrein_benutzt;
+
+  on enter_tile at (3, 4) -> schrein;
+  group schrein first {
+    when flag(schrein_benutzt) do { say(T.schrein_leer); }
+    else                       do { say(T.schrein_text); battle(G.wache, 0); set_flag(schrein_benutzt); give_gold(100); give_item(I.amulett, 1); }
+  }
+
+  on enter_tile at (5, 5) -> wurf;
+  group wurf first {
+    when chance(50) do { give_gold(5); }
+    else            do { give_gold(1); }
+  }
+}

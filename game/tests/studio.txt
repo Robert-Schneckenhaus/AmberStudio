@@ -1,0 +1,112 @@
+# Amber Studio without a window (scripts/test.sh studio): runs on a copy of the example content in out/studio, so the saves
+# change nothing of the repository. Commands: game/Amber.Studio/Studio/StudioTest.csh.
+
+frame 2
+expect errors 0
+expect tab Karte
+shot out/studio_map.png
+
+# ---- the map: paint, undo, a stroke, erase, the pipette -----------------------------------------
+map meadow
+layer 1
+tool paint
+gid 2
+paint 5 5
+expect tile 1 5 5 2
+expect dirty true
+undo
+expect tile 1 5 5 0
+redo
+expect tile 1 5 5 2
+paint 2 6 6 6
+expect tile 1 2 6 2
+expect tile 1 4 6 2
+expect tile 1 6 6 2
+tool erase
+paint 4 6
+expect tile 1 4 6 0
+tool pick
+paint 9 2
+expect tab Karte
+save
+expect dirty false
+expect errors 0
+
+# ---- play from here: F5 over a cell of the map ------------------------------------------------
+hover 10 10
+key F5
+expect tab Spiel
+expect game running
+ticks 20
+expect game-map meadow
+expect game-debug expect at 10 10
+shot out/studio_game.png
+# Space shows the whole text of the arrival, Space again closes it, then Escape ends the game
+gamekey Space
+ticks 5
+gamekey Space
+ticks 30
+expect game-debug expect modals 0
+gamekey Escape
+expect game stopped
+expect tab Karte
+
+# ---- the database ------------------------------------------------------------------------------
+section items
+expect tab Datenbank
+expect records items 2
+record apple
+setfield price 3
+expect field items apple price 3
+undo
+expect field items apple price 2
+setfield description Crisp: sweet and "red".
+expect field items apple description Crisp: sweet and "red".
+record walking_stick
+setfield price 7
+expect field items walking_stick price 7
+addrecord oak_stick
+expect records items 3
+expect field items oak_stick price 7
+removerecord
+expect records items 2
+record apple
+usage
+expect message meadow.ams
+shot out/studio_data.png
+
+# ---- the conversations -------------------------------------------------------------------------
+npc ina
+expect tab Gespräche
+expect entries 7
+settext ina_name I'm Ina, keeper of the meadow.
+expect text ina_name I'm Ina, keeper of the meadow.
+addtopic Pond | | The pond? Mind the frogs.
+expect entries 8
+expect line scripts/meadow.ams 26 topic "Pond" do { say(T.ina_pond); }
+expect text ina_pond The pond? Mind the frogs.
+expect line scripts/meadow.ams 27 topic "*"
+entry 6
+shot out/studio_talks.png
+
+# saved, the game compiles the new topic, its text and its word
+save
+expect errors 0
+expect file-contains scripts/meadow.ams topic "Pond" do { say(T.ina_pond); }
+expect file-contains tables.yaml ina_pond:
+expect file-contains tables.yaml pond: Pond
+expect file-contains tables.yaml price: 7
+
+# a mistake shows up in the messages after the check
+section items
+record apple
+setfield heal not_a_number
+save
+expect errors 1
+undo
+save
+expect errors 0
+
+# ---- the text tab ------------------------------------------------------------------------------
+tab Text
+expect tab Text

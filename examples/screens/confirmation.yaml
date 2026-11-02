@@ -1,0 +1,11 @@
+# Bestätigungsdialog. Aufruf: push_screen(S.confirmation, 0, 1, T.text_id)
+# Ergebnis (result): 1 = Ja, 0 = Nein oder abgebrochen (Escape).
+screen: confirmation
+extends: window_modal
+args: [text]                                   # screen-Var 0: Text-ID
+region: { at: [64, 72], size: [192, 80] }
+nodes:
+  - window:   { id: frame,   at: [0, 0],   size_tiles: [12, 5] }
+  - textview: { id: message, at: [8, 8],   size: [176, 40], source: "screen.text", paged: false }
+  - button:   { id: yes,     at: [40, 56], icon: yes, hotkey: y, on_click: confirm_yes }
+  - button:   { id: no,      at: [120, 56], icon: no,  hotkey: n, on_click: confirm_no }

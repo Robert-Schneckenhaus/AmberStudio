@@ -1,0 +1,215 @@
+tick=0 fire enter_tile x=1 y=1
+tick=0 start enter_tile chunk=Map:1 binding=0 thread=0
+tick=0 end thread=0
+tick=0 fired enter_tile threads=1
+tick=2 expect flag a 1 ok
+tick=2 expect flag b 1 ok
+tick=2 expect flag global_an 1 ok
+tick=3 fire enter_tile x=1 y=1
+tick=3 start enter_tile chunk=Map:1 binding=0 thread=0
+tick=3 end thread=0
+tick=3 fired enter_tile threads=1
+tick=5 expect flag a 0 ok
+tick=5 expect flag b 0 ok
+tick=5 expect flag global_an 0 ok
+tick=10 fire enter_tile x=2 y=2
+tick=10 start enter_tile chunk=Map:1 binding=1 thread=0
+tick=10 act give_gold
+tick=10 act give_gold
+tick=10 act give_gold
+tick=10 end thread=0
+tick=10 fired enter_tile threads=1
+tick=12 expect var x -7 ok
+tick=12 expect var y -10 ok
+tick=12 expect var global_zahl 10 ok
+tick=12 expect gold 13 ok
+tick=20 fire enter_tile x=3 y=3
+tick=20 start enter_tile chunk=Map:1 binding=2 thread=0
+tick=20 act give_gold
+tick=20 act give_gold
+tick=20 act give_gold
+tick=20 end thread=0
+tick=20 fired enter_tile threads=1
+tick=22 expect var32 gross -2147483648 ok
+tick=22 expect var32 klein -7 ok
+tick=22 expect gold 20 ok
+tick=30 fire enter_tile x=4 y=4
+tick=30 start enter_tile chunk=Map:1 binding=3 thread=0
+tick=30 end thread=0
+tick=30 fired enter_tile threads=1
+tick=31 start custom chunk=Map:1 binding=4 thread=0
+tick=31 act give_gold
+tick=31 end thread=0
+tick=31 start custom chunk=Map:1 binding=4 thread=0
+tick=31 act give_gold
+tick=31 end thread=0
+tick=31 start custom chunk=Map:1 binding=4 thread=0
+tick=31 act give_gold
+tick=31 end thread=0
+tick=34 expect gold 1130 ok
+tick=40 fire enter_tile x=5 y=5
+tick=40 start enter_tile chunk=Map:1 binding=5 thread=0
+tick=40 drop event custom (queue full)
+tick=40 drop event custom (queue full)
+tick=40 drop event custom (queue full)
+tick=40 drop event custom (queue full)
+tick=40 drop event custom (queue full)
+tick=40 drop event custom (queue full)
+tick=40 drop event custom (queue full)
+tick=40 drop event custom (queue full)
+tick=40 end thread=0
+tick=40 fired enter_tile threads=1
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=41 start custom chunk=Map:1 binding=6 thread=0
+tick=41 end thread=0
+tick=50 fire enter_tile x=5 y=5
+tick=50 start enter_tile chunk=Map:1 binding=5 thread=0
+tick=50 drop event custom (queue full)
+tick=50 drop event custom (queue full)
+tick=50 drop event custom (queue full)
+tick=50 drop event custom (queue full)
+tick=50 drop event custom (queue full)
+tick=50 drop event custom (queue full)
+tick=50 drop event custom (queue full)
+tick=50 drop event custom (queue full)
+tick=50 end thread=0
+tick=50 fired enter_tile threads=1
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=51 start custom chunk=Map:1 binding=6 thread=0
+tick=51 end thread=0
+tick=55 expect threads 0 ok
+tick=60 fire enter_tile x=6 y=6
+tick=60 start enter_tile chunk=Map:1 binding=7 thread=0
+tick=60 act push_screen blocked
+tick=60 act give_gold
+tick=60 act push_screen blocked
+tick=60 fired enter_tile threads=1
+tick=62 expect waiting push_screen 1 ok
+tick=63 answer push_screen 0 thread=0
+tick=63 resume thread=0 result=0
+tick=63 act give_gold
+tick=63 end thread=0
+tick=65 hash crc32=0xC948A9D6 gold=1133
+tick=71 hash crc32=0xC948A9D6 gold=1133

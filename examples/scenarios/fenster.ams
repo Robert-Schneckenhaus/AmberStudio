@@ -1,0 +1,31 @@
+// Script of the golden trace scenario fenster.scenario: screen instances with their own state, triggers and handlers.
+map platz {
+  on enter_tile at (1, 1) -> hallo;
+  group hallo { do { give_gold(1); } }
+}
+
+screen info {
+  var start;                       // screen variable 0: the argument of the screen
+  var klicks;
+  flag gesehen;
+
+  on screen_open -> oeffnen;
+  group oeffnen { do { set_flag(gesehen); copy_var(klicks, start); give_gold(1); } }
+
+  on screen_close -> schliessen;
+  group schliessen { do { give_gold(100); } }
+
+  // handlers which the definition runs directly (RunGroup): the value is the trigger argument
+  group druck all {
+    when arg == 2 do { add_var(klicks, 2); }
+    when arg == 3 do { add_var(klicks, 3); }
+    when arg == 3 and klicks >= 8 do { give_gold(1000); }
+    when arg == 0 do { toggle_flag(gesehen); }
+  }
+  group nachher { do { wait(2); give_gold(5); } }
+}
+
+screen leer {
+  on screen_open -> gruss;
+  group gruss { do { give_gold(2); } }
+}

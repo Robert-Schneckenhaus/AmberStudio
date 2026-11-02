@@ -1,0 +1,46 @@
+# The tests of the repository (scripts/test.sh): build, unit tests, the content check, the playthrough of the example
+# game (also from a cooked pack) and Amber Studio without a window. With the newest CShift release and the standard
+# library of CShift's master (System.Ui of the studio).
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Linux
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: GLFW and OpenGL (the window of amberplayer)
+        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends libglfw3-dev libgl-dev
+
+      - name: CShift (newest release, stdlib of master)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download --repo Robert-Schneckenhaus/CShift --pattern 'cshift-*-linux-x64.tar.xz' --dir "$RUNNER_TEMP"
+          tar xf "$RUNNER_TEMP"/cshift-*-linux-x64.tar.xz -C "$RUNNER_TEMP"
+          echo "CSHIFTC=$(echo "$RUNNER_TEMP"/cshift-*-linux-x64/cshiftc)" >> "$GITHUB_ENV"
+          git clone --quiet --depth 1 --filter=blob:none --sparse https://github.com/Robert-Schneckenhaus/CShift.git "$RUNNER_TEMP/cshift"
+          git -C "$RUNNER_TEMP/cshift" sparse-checkout set stdlib
+          echo "CSHIFT_STDLIB=$RUNNER_TEMP/cshift/stdlib" >> "$GITHUB_ENV"
+
+      - name: Tests
+        run: scripts/test.sh
+
+      - name: Screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: game/out
+          retention-days: 14

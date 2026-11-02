@@ -1,0 +1,12 @@
+{
+	"name": "amberpal",
+	"sources": [
+		"Program.csh",
+		"../Amber.Base",
+		"../Amber.Script.Common",
+		"../Amber.Graphics"
+	],
+	"output": "bin/amberpal",
+	"optimize": 2,
+	"links": []
+}

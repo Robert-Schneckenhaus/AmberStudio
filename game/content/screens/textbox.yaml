@@ -1,0 +1,12 @@
+# Text box for say(...). say is push_screen(S.textbox, 0, 1, T.text_id): it waits until the text is read.
+# Space, Enter or a click turn the page; after the last page the screen closes itself (native behavior of "paged").
+screen: textbox
+extends: window_modal
+transparent: false
+args: [text]
+region: { at: [8, 128], size: [304, 64] }
+close_on: []
+nodes:
+  - window:   { id: frame,   at: [0, 0],  size_tiles: [19, 4] }
+  - label:    { id: speaker, at: [8, 4],  bind: "screen.text.speaker", color: 1 }
+  - textview: { id: message, at: [8, 15], size: [288, 40], source: "screen.text", paged: true }

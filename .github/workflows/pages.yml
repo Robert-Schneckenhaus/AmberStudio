@@ -1,0 +1,67 @@
+# Amber Studio as a web page on GitHub Pages: the editor (wasm) with the example game (game/content) as the project it
+# opens at the start. Built with the newest CShift release and the standard library of CShift's master, which has the
+# trees, tabs and held keys of System.Ui before they are in a release (scripts/studio-page.sh).
+#
+# Runs on every push to main that touches the game or the libraries, and by hand (workflow_dispatch). Needs GitHub Pages
+# with the source "GitHub Actions" (Settings > Pages).
+
+name: pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "game/**"
+      - "src/**"
+      - "scripts/studio-page.sh"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build the page
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: CShift (newest release, stdlib of master)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download --repo Robert-Schneckenhaus/CShift --pattern 'cshift-*-linux-x64.tar.xz' --dir "$RUNNER_TEMP"
+          tar xf "$RUNNER_TEMP"/cshift-*-linux-x64.tar.xz -C "$RUNNER_TEMP"
+          echo "CSHIFTC=$(echo "$RUNNER_TEMP"/cshift-*-linux-x64/cshiftc)" >> "$GITHUB_ENV"
+          git clone --quiet --depth 1 --filter=blob:none --sparse https://github.com/Robert-Schneckenhaus/CShift.git "$RUNNER_TEMP/cshift"
+          git -C "$RUNNER_TEMP/cshift" sparse-checkout set stdlib
+          echo "CSHIFT_STDLIB=$RUNNER_TEMP/cshift/stdlib" >> "$GITHUB_ENV"
+
+      - name: Build Amber Studio for the browser
+        run: |
+          "$CSHIFTC" --version
+          mkdir -p _site
+          scripts/studio-page.sh _site/index.html
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Publish on GitHub Pages
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

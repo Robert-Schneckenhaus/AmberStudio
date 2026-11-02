@@ -1,0 +1,9 @@
+# Basisvorlage für modale Fenster/Popups.
+# Wird per "extends: window_modal" geerbt (Eigenschaften und Knoten werden zusammengeführt).
+prefab: window_modal
+modal: true
+transparent: true        # Screen darunter bleibt sichtbar (Popup)
+fade: none
+allow_character_select: false
+allow_inventory: false
+close_on: [escape]

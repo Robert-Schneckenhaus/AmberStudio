@@ -1,0 +1,20 @@
+# The companions (key P): left the companions, right the one selected with its values, gear and spells; below the pack.
+# A click (or Enter) on an item of the pack gives it to the selected companion: a weapon or an armor to wear (what it
+# wore goes back into the pack), a scroll to learn its spell. U takes weapon and armor off again. The result is always 0.
+screen: party
+extends: window_modal
+transparent: false
+region: { at: [8, 40], size: [304, 152] }
+nodes:
+  - window:   { id: frame,   at: [0, 0],     size_tiles: [19, 9] }
+  - label:    { id: title,   at: [8, 4],     text: T.party_title, color: 1 }
+  - list:     { id: members, at: [8, 16],    size: [120, 40], rows: 4, source: "party.members" }
+  - label:    { id: stats,   at: [136, 16],  bind: "member.stats", color: 0 }
+  - label:    { id: gear,    at: [136, 28],  bind: "member.gear", color: 0 }
+  - label:    { id: spells,  at: [136, 40],  bind: "member.spells", color: 2 }
+  - itemgrid: { id: items,   at: [8, 60],    size: [284, 44], cols: 14, rows: 2, source: "party.items", on_select: give }
+  - label:    { id: name,    at: [8, 106],   bind: "items.name", color: 1 }
+  - label:    { id: detail,  at: [8, 116],   bind: "items.detail", color: 3 }
+  - label:    { id: message, at: [8, 126],   bind: "party.message", color: 3 }
+  - button:   { id: takeoff, at: [8, 136],   text: T.btn_take_off, hotkey: u, on_click: take_off }
+  - button:   { id: close,   at: [222, 136], text: T.btn_party_close, hotkey: p, on_click: close }

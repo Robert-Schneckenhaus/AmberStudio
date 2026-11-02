@@ -1,0 +1,16 @@
+# The carried items (key I). Nothing to choose, only to look at: the selected item shows its name and description.
+screen: inventory
+extends: window_modal
+transparent: false
+region: { at: [8, 80], size: [304, 112] }
+nodes:
+  - window:   { id: frame,  at: [0, 0],   size_tiles: [19, 7] }
+  - label:    { id: title,  at: [8, 4],   text: T.inventory_title, color: 1 }
+  - label:    { id: gold,   at: [224, 4], bind: "party.gold", color: 1 }
+  - itemgrid: { id: items,  at: [8, 14],  size: [284, 44], cols: 14, rows: 2, source: "party.items" }
+  - label:    { id: name,   at: [8, 62],  bind: "items.name", color: 1 }
+  - label:    { id: detail, at: [8, 72],  bind: "items.detail", color: 3 }
+  - label:    { id: stats,  at: [8, 82],  bind: "party.stats", color: 2 }
+  - label:    { id: hp,     at: [8, 94],  bind: "party.hp", color: 0 }
+  - bar:      { id: hp_bar, at: [72, 94], size: [100, 8], kind: hp, slot: 1, layer: 1 }
+  - button:   { id: close,  at: [222, 92], text: T.btn_close, hotkey: i, on_click: close }

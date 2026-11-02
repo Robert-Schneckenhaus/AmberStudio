@@ -1,0 +1,57 @@
+tick=0 fire enter_tile x=1 y=1
+tick=0 start enter_tile chunk=Map:1 binding=0 thread=0
+tick=0 act give_gold
+tick=0 end thread=0
+tick=0 fired enter_tile threads=1
+tick=2 open screen info 5
+tick=2 start screen_open chunk=Screen:1 binding=0 thread=0
+tick=2 act give_gold
+tick=2 end thread=0
+tick=2 opened screen info threads=1
+tick=4 expect var info.start 5 ok
+tick=4 expect var info.klicks 5 ok
+tick=4 expect flag info.gesehen 1 ok
+tick=4 expect gold 2 ok
+tick=6 run screen info group 2 arg=2
+tick=6 run group 8002 chunk=Screen:1 thread=0
+tick=6 end thread=0
+tick=6 ran screen info started=1
+tick=8 expect var info.klicks 7 ok
+tick=9 run screen info group 2 arg=3
+tick=9 run group 8002 chunk=Screen:1 thread=0
+tick=9 act give_gold
+tick=9 end thread=0
+tick=9 ran screen info started=1
+tick=11 expect var info.klicks 10 ok
+tick=11 expect gold 1002 ok
+tick=12 run screen info group 2 arg=0
+tick=12 run group 8002 chunk=Screen:1 thread=0
+tick=12 end thread=0
+tick=12 ran screen info started=1
+tick=13 expect flag info.gesehen 0 ok
+tick=14 run screen info group 3 arg=0
+tick=14 run group 8003 chunk=Screen:1 thread=0
+tick=14 act wait ticks=2
+tick=14 ran screen info started=1
+tick=15 run screen info group 3 arg=0
+tick=15 skip run group 8003 chunk=Screen:1 (already running)
+tick=15 ran screen info started=0
+tick=16 resume thread=0 result=0
+tick=16 act give_gold
+tick=16 end thread=0
+tick=20 expect gold 1007 ok
+tick=22 open screen leer
+tick=22 start screen_open chunk=Screen:2 binding=0 thread=0
+tick=22 act give_gold
+tick=22 end thread=0
+tick=22 opened screen leer threads=1
+tick=24 close screen leer
+tick=24 closed screen leer threads=0
+tick=26 close screen info
+tick=26 start screen_close chunk=Screen:1 binding=1 thread=0
+tick=26 act give_gold
+tick=26 end thread=0
+tick=26 closed screen info threads=1
+tick=28 expect gold 1109 ok
+tick=30 hash crc32=0xB84D8EA6 gold=1109
+tick=41 hash crc32=0xB84D8EA6 gold=1109

@@ -1,0 +1,151 @@
+// Rosetta-Test: die 23 Event-Typen aus Amberstar (EventType-Enum in Amberstar.GameData) als AmberScript v0.
+// Koordinaten, Namen und IDs sind Platzhalter; entscheidend ist die Ausdrucksform.
+// Kein Kontrollfluss in Aktionen: Verzweigung nur über Bedingungen und "then".
+
+flag wind_chain;                          // globale Flags
+flag amberstar_complete;
+flag piece_1;  flag piece_2;  flag piece_3;  flag piece_4;  flag piece_5;
+flag piece_6;  flag piece_7;  flag piece_8;  flag piece_9;  flag piece_10;
+flag piece_11; flag piece_12; flag piece_13;
+
+map rosetta_demo {
+  flag door_a_open;                       // map-lokale Flags
+  flag riddle_active;
+  flag riddle_solved;
+  flag ambush_done;
+
+  // ---- 1  MapExit ---------------------------------------------------------------------------
+  on enter_tile at (0, 9) -> exit_to_world;
+  group exit_to_world { do { teleport(M.world_twinlake, 34, 12, down, 1); } }
+
+  // ---- 2  Door (inkl. Locked-Logik) ----------------------------------------------------------
+  on examine at (12, 6) -> door_a;
+  group door_a first {
+    when flag(door_a_open)      do { say(T.door_is_open); }
+    when has_item(I.tavern_key, 1)
+                                do { set_tile(1, 12, 6, TILE.door_open); set_flag(door_a_open); say(T.door_unlocked); }
+    else                        do { push_screen(S.locked, 0, 1, 40); } then door_a_after;   // Arg: Schlossstärke
+  }
+  group door_a_after first {                                  // result kommt aus dem Locked-Screen
+    when result == 1 do { set_tile(1, 12, 6, TILE.door_open); set_flag(door_a_open); }
+  }
+
+  // ---- 3  ShowPictureText --------------------------------------------------------------------
+  on enter_tile at (5, 5) -> vision;
+  group vision { once do { say_picture(PIC.dragon_egg, T.vision_text); } }
+
+  // ---- 4  Chest ------------------------------------------------------------------------------
+  on examine at (3, 9) -> chest_a;
+  group chest_a { do { push_screen(S.chest, 0, 1, 17); } }
+
+  // ---- 5  TrapDoor ---------------------------------------------------------------------------
+  on enter_tile at (8, 3) -> trapdoor;
+  group trapdoor { do { say(T.floor_gives_way); teleport(M.cellar, 8, 4, keep, 1); damage(all, 5, 0); } }
+
+  // ---- 6  Teleporter -------------------------------------------------------------------------
+  on enter_tile at (20, 2) -> teleporter_a;
+  group teleporter_a { do { teleport(M.tower_top, 3, 3, up, 0); } }
+
+  // ---- 7  WindGate (nur mit Windkette) -------------------------------------------------------
+  on enter_tile at (2, 2) -> windgate;
+  group windgate first {
+    when flag(wind_chain) do { teleport(M.wind_island, 10, 10, down, 1); }
+    else                  do { say(T.wind_gate_dead); }
+  }
+
+  // ---- 8  Spinner ----------------------------------------------------------------------------
+  on enter_tile at (15, 8) -> spinner;
+  group spinner { do { set_dir(party, random); } }
+
+  // ---- 9  DamageField ------------------------------------------------------------------------
+  on step in (10, 5, 3, 2) -> lava;
+  group lava { do { damage(all, 4, 0); sfx(SND.hurt); } }
+
+  // ---- 10 AntiMagic (Zone) -------------------------------------------------------------------
+  on enter_tile in (18, 10, 4, 4) -> antimagic_on;
+  on leave_tile in (18, 10, 4, 4) -> antimagic_off;
+  group antimagic_on  { do { set_modifier(antimagic, 1); } }
+  group antimagic_off { do { set_modifier(antimagic, 0); } }
+
+  // ---- 11 HPRegeneration / 12 SPRegeneration -------------------------------------------------
+  on step in (22, 4, 2, 2) -> spring_hp;
+  on step in (22, 8, 2, 2) -> spring_sp;
+  group spring_hp { do { heal(all, 10, 0); } }
+  group spring_sp { do { heal(all, 0, 10); } }
+
+  // ---- 13 ExecuteTrap ------------------------------------------------------------------------
+  on enter_tile at (11, 11) -> gas_trap;
+  group gas_trap { once do { trap(TRAP.poison_gas, 0); } }
+
+  // ---- 14 RiddleMouth (Antwort über zwei Gruppen: ask_word liefert result) -------------------
+  on speak at (14, 9) -> mouth_speak;
+  group mouth_speak first {
+    when flag(riddle_active) do { ask_word(W.schleuder); } then mouth_answer;
+    else                     do { say(T.mouth_silent); }
+  }
+  group mouth_answer first {
+    when result == 1 do { set_tile(1, 15, 9, TILE.passage); set_flag(riddle_solved); }
+    else             do { trap(TRAP.spikes, 20); }
+  }
+
+  // ---- 15 AttributeChange --------------------------------------------------------------------
+  on examine at (7, 1) -> statue;
+  group statue { once do { change_attr(all, AT.STR, 1); say(T.you_feel_stronger); } }
+
+  // ---- 16 ChangeTile (Hebel) und 19 UseItem --------------------------------------------------
+  on use_item(I.crank) at (9, 9) -> lever;
+  group lever { do { set_tile(1, 14, 3, TILE.bridge); sfx(SND.mechanism); } }
+
+  on use_item(I.old_key) at (30, 20) -> old_lock;             // Amberstar: rostiger Schlüssel öffnet die Wand
+  group old_lock { do { take_item(I.old_key, 1); set_tile(1, 30, 19, TILE.chest_revealed); } }
+
+  // ---- 17 Encounter (wiederholbar bis gewonnen) ----------------------------------------------
+  on enter_tile at (16, 4) -> ambush;
+  group ambush first {
+    when not flag(ambush_done) do { battle(G.orcs, 0); } then ambush_after;
+  }
+  group ambush_after first {                                  // result: 0 gewonnen, 1 geflohen
+    when result == 0 do { set_flag(ambush_done); give_gold(250); give_xp(all, 400); }
+  }
+
+  // ---- 18 Place (Händler mit Öffnungszeiten) -------------------------------------------------
+  on speak at (18, 7) -> smithy;
+  group smithy first {
+    when hour_in(8, 18) do { push_screen(S.place, 0, 2, PLACE.merchant, 12); }   // Ortsart, Sortiment
+    else                do { say(T.shop_closed); }
+  }
+
+  // ---- 20 DoorExit / TravelExit --------------------------------------------------------------
+  on enter_tile at (13, 0) -> door_exit;
+  group door_exit { do { teleport(M.town_street, 22, 14, down, 1); } }
+
+  on enter_tile at (0, 5) -> travel_exit;
+  group travel_exit first {
+    when transport(TR.ship) do { teleport(M.sea, 40, 41, keep, 1); }
+    else                    do { teleport(M.coast, 5, 5, keep, 1); }
+  }
+
+  // ---- 21 Altar (13 Amberstar-Teile) ---------------------------------------------------------
+  // Original: danach müssen die Götternamen in fester Reihenfolge genannt werden.
+  // Hier: eine Kette aus ask_word-Gruppen (altar_name_2 ... altar_name_13 analog altar_name_1).
+  on speak at (25, 25) -> altar;
+  group altar first {
+    when flag(piece_1) and flag(piece_2) and flag(piece_3) and flag(piece_4) and flag(piece_5)
+     and flag(piece_6) and flag(piece_7) and flag(piece_8) and flag(piece_9) and flag(piece_10)
+     and flag(piece_11) and flag(piece_12) and flag(piece_13)
+                 do { say(T.altar_assemble); ask_word(W.god_1); } then altar_name_1;
+    else         do { say(T.altar_missing); }
+  }
+  group altar_name_1 first {
+    when result == 1 do { ask_word(W.god_2); } then altar_finish;   // Kette der übrigen Namen gekürzt
+    else             do { say(T.altar_wrong_name); }
+  }
+  group altar_finish first {
+    when result == 1 do { set_flag(amberstar_complete); teleport(M.godsbane, 10, 20, up, 1); }
+    else             do { say(T.altar_wrong_name); }
+  }
+
+  // ---- 22 Outro ------------------------------------------------------------------------------
+  on enter_tile at (1, 1) -> finale;
+  group finale { do { play_outro(); } }
+}
