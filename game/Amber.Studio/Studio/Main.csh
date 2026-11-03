@@ -3,6 +3,7 @@
 //
 //   amberstudio [--project <folder>]           the window; without a folder the repository around the current folder
 //   amberstudio --test <script> [--project f]  no window: the script drives the studio (see StudioTest.csh)
+//   --browser                                  in a web page (scripts/studio-page.sh): a larger Ui, saved files download
 
 using System;
 using System.Ui;
@@ -20,6 +21,8 @@ int Main(string[] args)
 			project = args[i + 1];
 			i += 1;
 		}
+		else if (args[i] == "--browser")
+			BrowserPage = true;
 		else if (args[i] == "--test" && i + 1 < args.Length)
 		{
 			script = args[i + 1];
@@ -44,6 +47,8 @@ int Main(string[] args)
 	var ui = Ui.Create();
 	var app = App.Create();
 
+	app.UseDefaultZoom();
+
 	if (project.Length == 0)
 		project = FindProjectFolder();
 
@@ -51,7 +56,7 @@ int Main(string[] args)
 
 	while (!app.QuitRequested() && window.Update())
 	{
-		ui.Begin(window);
+		ui.Begin(window, app.Zoom());
 
 		if (first && project.Length > 0)
 		{

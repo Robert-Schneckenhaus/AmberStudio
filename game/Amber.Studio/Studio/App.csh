@@ -46,6 +46,8 @@ struct AppValues
 	int Message;
 	/// The tree opens its main nodes in the next frame (a new project).
 	bool OpenTree;
+	/// The size of the Ui on top of the scale of the screen (Ansicht: Größer, Kleiner).
+	double Zoom;
 	bool GameWasRunning;
 }
 
@@ -75,6 +77,7 @@ struct App
 		values[0].Status = "";
 		values[0].LastDoc = "";
 		values[0].Message = -1;
+		values[0].Zoom = 1.0;
 
 		return App
 		{
@@ -96,6 +99,33 @@ struct App
 	bool QuitRequested()
 	{
 		return _s[0].Quit;
+	}
+
+	double Zoom()
+	{
+		return _s[0].Zoom;
+	}
+
+	/// In the browser the canvas has the pixels of the screen (devicePixelRatio 1 on most desktops): a size larger, so
+	/// that the Ui takes its larger font (10x20).
+	void UseDefaultZoom()
+	{
+		_s[0].Zoom = RunsInBrowser() ? 1.5 : 1.0;
+	}
+
+	/// One step larger or smaller: 100 %, 150 %, 200 %, 300 % (the steps at which the Ui has a sharp font).
+	void ZoomBy(int step)
+	{
+		var steps = new double[] { 1.0, 1.5, 2.0, 3.0 };
+		int at = 0;
+
+		for (var i = 0; i < steps.Length; i += 1)
+		{
+			if (steps[i] <= _s[0].Zoom + 0.01)
+				at = i;
+		}
+
+		_s[0].Zoom = steps[Clamp(at + step, 0, steps.Length - 1)];
 	}
 
 	int Tab()
@@ -455,6 +485,15 @@ struct App
 		if (input.Pressed(System.Ui.Key.O, KeyModifiers.Ctrl))
 			_s[0].Opening = true;
 
+		if (input.Pressed(System.Ui.Key.Plus, KeyModifiers.Ctrl))
+			ZoomBy(1);
+
+		if (input.Pressed(System.Ui.Key.Minus, KeyModifiers.Ctrl))
+			ZoomBy(-1);
+
+		if (input.Pressed(System.Ui.Key.D0, KeyModifiers.Ctrl))
+			_s[0].Zoom = 1.0;
+
 		if (!_s[0].HasProject)
 			return;
 
@@ -562,6 +601,17 @@ struct App
 			{
 				if (ui.MenuItem(_s[0].Dark ? "Helles Thema" : "Dunkles Thema"))
 					_s[0].Dark = !_s[0].Dark;
+
+				ui.Separator();
+
+				if (ui.MenuItem("Größer", "Ctrl+Plus"))
+					ZoomBy(1);
+
+				if (ui.MenuItem("Kleiner", "Ctrl+Minus"))
+					ZoomBy(-1);
+
+				if (ui.MenuItem("Normale Größe", "Ctrl+0"))
+					_s[0].Zoom = 1.0;
 			}
 		}
 	}
