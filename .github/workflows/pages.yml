@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: CShift (newest release, stdlib of master)
+      - name: CShift (newest release, stdlib and web runtime of master)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -41,8 +41,9 @@ jobs:
           tar xf "$RUNNER_TEMP"/cshift-*-linux-x64.tar.xz -C "$RUNNER_TEMP"
           echo "CSHIFTC=$(echo "$RUNNER_TEMP"/cshift-*-linux-x64/cshiftc)" >> "$GITHUB_ENV"
           git clone --quiet --depth 1 --filter=blob:none --sparse https://github.com/Robert-Schneckenhaus/CShift.git "$RUNNER_TEMP/cshift"
-          git -C "$RUNNER_TEMP/cshift" sparse-checkout set stdlib
+          git -C "$RUNNER_TEMP/cshift" sparse-checkout set stdlib web
           echo "CSHIFT_STDLIB=$RUNNER_TEMP/cshift/stdlib" >> "$GITHUB_ENV"
+          echo "CSHIFT_WEB_JS=$RUNNER_TEMP/cshift/web/cshift.js" >> "$GITHUB_ENV"
 
       - name: Build Amber Studio for the browser
         run: |

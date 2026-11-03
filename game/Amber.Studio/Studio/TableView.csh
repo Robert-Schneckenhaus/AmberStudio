@@ -590,7 +590,7 @@ struct TableView
 		_s[0].Section = Clamp(_s[0].Section, 0, Sections.Count() - 1);
 
 		var section = Sections.Get(_s[0].Section);
-		int columns = section.Columns.Count() > 0 ? Math.Min(section.Columns.Count(), 6) : 1;
+		int columns = Math.Min(section.Columns.Count(), 6);
 
 		using (ui.Row())
 		{

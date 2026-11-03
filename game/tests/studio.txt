@@ -75,6 +75,26 @@ usage
 expect message meadow.ams
 shot out/studio_data.png
 
+# every section can be shown and its entries chosen (also the ones with plain values: start, keywords, lists)
+section start
+record map
+section maps
+record cellar
+section keywords
+record name
+section screens
+section natives
+section palettes
+section hero
+section spells
+section monsters
+section groups
+section chests
+section texts
+section companions
+expect tab Datenbank
+shot out/studio_data_start.png
+
 # ---- the conversations -------------------------------------------------------------------------
 npc ina
 expect tab Gespräche

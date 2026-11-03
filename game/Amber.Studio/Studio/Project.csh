@@ -124,10 +124,13 @@ struct StudioProject
 	}
 }
 
-/// True in a browser page (its file system has the folder the browser copies the user's files to).
+/// Set by --browser (the page of scripts/studio-page.sh passes it).
+bool BrowserPage = false;
+
+/// True in a browser page: --browser, or the folder the browser copies the user's files to exists.
 bool RunsInBrowser()
 {
-	return Directory.Exists("/home/web_user");
+	return BrowserPage || Directory.Exists("/home/web_user");
 }
 
 /// In the browser a saved file is also offered as a download (the page cannot write the user's folder).

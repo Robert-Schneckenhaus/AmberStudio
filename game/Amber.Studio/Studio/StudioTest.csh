@@ -4,6 +4,7 @@
 //   size W H                   the frame (default 1400 x 860)
 //   project PATH               opens the project
 //   frame [N]                  N frames without input
+//   advance N                  N frames with a running clock (the game in the studio runs a tick each)
 //   move X Y | click X Y | rclick X Y      the mouse in pixels of the frame
 //   key NAME [ctrl] [shift]    a key (F5, S, Z, Escape, Left ...)
 //   type TEXT                  typed text
@@ -41,6 +42,9 @@ struct StudioTest
 	Image Frame;
 	int Failures;
 	int Line;
+	/// The clock of the frames (seconds): it only moves with "advance", so the game runs ticks only there.
+	double Clock;
+	bool Running;
 
 	void Fail(string text)
 	{
@@ -55,6 +59,7 @@ struct StudioTest
 		input.MouseX = MouseX;
 		input.MouseY = MouseY;
 		input.MouseDown = Down;
+		input.Time = Clock;
 
 		return input;
 	}
@@ -70,6 +75,11 @@ struct StudioTest
 
 	void Draw(UiInput input)
 	{
+		if (Running)
+			Clock += 0.02;
+
+		input.Time = Clock;
+
 		Ui.Begin(input, Width, Height, 1.0);
 		App.Draw(Ui, Width, Height);
 		App.AfterFrame();
@@ -133,6 +143,16 @@ struct StudioTest
 				Fail(e.Message);
 
 			Run(Input());
+		}
+		else if (c == "advance")
+		{
+			// frames with a running clock (50 a second): the game in the studio runs ticks as in the window
+			Running = true;
+
+			for (var i = 0; i < Number(p, 1); i += 1)
+				Draw(Input());
+
+			Running = false;
 		}
 		else if (c == "frame")
 		{
