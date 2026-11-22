@@ -1,0 +1,20 @@
+// The crypt under the cellar (game/content/maps/crypt.tmx): a 3D map. Its layer objects holds the walls; a door is a wall
+// that set_tile opens (layer 2 = objects, tile 0 = free). examine looks at the cell in front of the party.
+
+map crypt {
+  on map_enter -> arrival;
+  group arrival { once do { say(T.crypt_arrival); } }
+
+  // the stairs up are a wall at (1, 1)
+  on examine at (1, 1) -> up;
+  group up { do { say(T.crypt_stairs); teleport(M.cellar, 12, 7, up, 1); } }
+
+  on examine at (7, 2) -> door;
+  on examine at (10, 4) -> door;
+  on examine at (5, 10) -> door;
+  on examine at (7, 10) -> door;
+  group door { do { set_tile(2, here, 0); say(T.crypt_door); } }
+
+  on examine at (13, 6) -> bones;
+  group bones { do { say(T.crypt_bones); } }
+}

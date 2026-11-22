@@ -305,7 +305,8 @@ Error<void> SameAsSource(ContentSource source, GameContent game)
 	{
 		var look = game.MapLooks.GetOrDefault(pair.Key, MapLookInfo { Palette = -1 });
 
-		if (look.Palette != pair.Value.Palette || look.Night != pair.Value.Night || look.Daylight != pair.Value.Daylight)
+		if (look.Palette != pair.Value.Palette || look.Night != pair.Value.Night || look.Daylight != pair.Value.Daylight || look.View3D != pair.Value.View3D
+			|| look.Light != pair.Value.Light || look.FlatFloor != pair.Value.FlatFloor || look.FlatCeiling != pair.Value.FlatCeiling || look.Sky != pair.Value.Sky)
 			return Difference("the look of the map " + pair.Key);
 	}
 

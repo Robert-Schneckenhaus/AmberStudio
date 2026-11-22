@@ -73,6 +73,7 @@ Jedes Symbol, das ein Skript benutzt (`T.x`, `I.x`, `K.x` ...), muss hier stehen
 - Vier Bildebenen mit festen Namen: `ground`, `decor`, `objects`, `over` (Krone, wird über Figuren gezeichnet), dazu die Ebene `collision` (blockierte Felder) und eine Objektebene `waypoints` mit benannten Punkten (`mira_stone` ...) für NPC-Routinen.
 - Erstellen und bearbeiten: entweder in Tiled oder mit `scripts\edit.cmd name` (Terrain-Pinsel, Kollision, Rückgängig; Ctrl+S schreibt die TMX) oder in Amber Studio. Die Beispielkarten macht `scripts/make-example-maps.py`; **nach Handbearbeitung nicht mehr ausführen** (überschreibt).
 - Neue Karte anmelden: unter `maps:` in `tables.yaml` eintragen, TMX ablegen, im Skript einen `map name { ... }`-Block anlegen. Die Kartengröße muss zur TMX passen.
+- **3D-Karten** (`view: 3d`): dieselben Ebenen mit anderer Bedeutung, `objects` = Wände (Kacheln 128×80), `ground` = Boden, `decor` = Decke (64×64), `over` = Billboards. Details und Steuerung in [game/README.md](game/README.md#3d-karten), ein Beispiel ist die Krypta (`scripts/make-example-crypt.py`).
 
 ### 3.3 Regeln (`scripts/*.ams`)
 
@@ -257,6 +258,7 @@ Wer `amberplayer` als Vorbild nimmt: `GameSession` (Zustand, Kartenwechsel mit `
 | Musik, Sound | Aktionen `music`, `sfx` sind Platzhalter |
 | Erfahrung und Stufen | Kampf in Echtzeit auf der Karte mit Held und bis zu 4 Gefährten (Heiler, Magier, Ranger), aber ohne Erfahrung und Stufen |
 | Präsentations-Packs (Grafik/Ton im Pack) | offen; Grafik kommt aus TMX und Tileset-Dateien |
+| 3D-Karten | Ansicht, freie Bewegung, Türen, Billboards; Automap, Kampf mit Zielen und Gefährten-Porträts fehlen noch |
 | Screen-Knoten `image`, `portrait`, `viewport` | fehlen (`bar` und die Icons der Gegenstände gibt es) |
 | m68k-Toolchain und Amiga-Emulator (6.1, 6.6) | offen |
 | Migration alter Savegames | Bibliothek vorhanden, `amberplayer` nutzt sie nicht |

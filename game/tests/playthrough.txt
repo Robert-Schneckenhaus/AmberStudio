@@ -1,5 +1,6 @@
 # Plays the example game through (scripts/test.sh playthrough): arrival, the sign, a conversation with Ina, the cellar
-# with the fight and the crate, Ina joins, saving and loading. The run fails (exit code 1) when an expectation is wrong.
+# with the fight and the crate, the crypt (a 3D map), Ina joins, saving and loading. The run fails (exit code 1) when an
+# expectation is wrong.
 
 # ---- arrival --------------------------------------------------------------------------------
 wait 10
@@ -98,6 +99,63 @@ expect modals 0
 expect gold 20
 expect item apple 2
 expect item walking_stick 1
+
+# ---- the crypt (a 3D map): down the stairs at (12, 8) of the cellar ------------------------------
+warp 12 7
+wait 4
+hold Down 16
+wait 20
+expect map crypt
+expect modals 1
+press Space
+wait 4
+expect modals 0
+expect at 2 1
+expect facing right
+# free movement: three cells east, a quarter turn right, one cell south, back to the east
+hold Up 48
+wait 2
+expect at 5 1
+hold Right 32
+expect facing down
+hold Up 16
+wait 2
+expect at 5 2
+hold Left 32
+expect facing right
+hold Up 16
+wait 2
+expect at 6 2
+expect blocked 7 2 1
+shot out/ex_07_crypt_door.png
+# Space looks at the door in front: it opens (set_tile on the layer objects)
+press Space
+wait 6
+expect modals 1
+press Space
+wait 4
+expect blocked 7 2 0
+hold Up 32
+wait 2
+expect at 8 2
+shot out/ex_08_crypt_room.png
+# walls stop the party: it slides along them instead
+hold Right 32
+hold Up 80
+wait 2
+expect at 8 3
+# the stairs up are a wall at (1, 1)
+warp 2 1
+wait 2
+hold Right 32
+expect facing left
+press Space
+wait 6
+expect modals 1
+press Space
+wait 20
+expect map cellar
+expect at 12 7
 
 # ---- back up, Ina joins ------------------------------------------------------------------------
 warp 6 7
