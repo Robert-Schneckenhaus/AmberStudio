@@ -16,9 +16,9 @@
 //   npc NAME | entry N | settext KEY TEXT | addtopic WORD | CONDITION | TEXT | removeentry
 //   save | undo | redo | check | dump (prints the entry of the database that is chosen)
 //   shot PATH                  the frame as PNG
-//   expect WHAT ...            tab NAME, errors N, tile LAYER X Y GID, game running|stopped, game-map NAME, dirty true|false,
-//                              field SECTION KEY FIELD VALUE, text KEY VALUE, line FILE N TEXT, status TEXT,
-//                              message TEXT, npcs N, entries N, records SECTION N
+//   expect WHAT ...            tab NAME, errors N, tile LAYER X Y GID, game running|stopped, fullscreen true|false,
+//                              game-map NAME, dirty true|false, field SECTION KEY FIELD VALUE, text KEY VALUE,
+//                              line FILE N TEXT, status TEXT, message TEXT, npcs N, entries N, records SECTION N
 //
 // Returns the number of failed expectations (an unknown command counts as one).
 
@@ -506,6 +506,8 @@ struct StudioTest
 			if (App.Game.Game().Debug(Rest(line, 2)) is error e)
 				Fail(e.Message);
 		}
+		else if (what == "fullscreen")
+			Check(App.FullScreen() == (p[2] == "true"), "full screen is " + (App.FullScreen() ? "on" : "off"));
 		else if (what == "dirty")
 			Check(App.Dirty() == (p[2] == "true"), "dirty " + p[2]);
 		else if (what == "field")

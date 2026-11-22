@@ -41,6 +41,8 @@ struct AppValues
 	int FrameHeight;
 	/// The game was started from the map tab (it goes back there when the game ends).
 	bool PlayFromMap;
+	/// The game fills the whole window (F11, "Starte ab hier (Vollbild)"); menu, panels and messages are hidden.
+	bool FullScreen;
 	/// The text document that was changed last (undo in the data and conversation tabs).
 	string LastDoc;
 	int Message;
@@ -383,8 +385,24 @@ struct App
 		Say(Game.Status());
 	}
 
+	/// The same as F5, with the game filling the whole window (for a phone, which has no F11).
+	void PlayFullScreen()
+	{
+		Play();
+
+		if (Game.Running())
+			_s[0].FullScreen = true;
+	}
+
+	/// True while the running game fills the whole window (Main shows it in the title, which the web page reads).
+	bool FullScreen()
+	{
+		return _s[0].FullScreen && Game.Running();
+	}
+
 	void StopGame()
 	{
+		_s[0].FullScreen = false;
 		Game.Stop();
 		Say(Game.Status());
 
@@ -502,6 +520,15 @@ struct App
 		else if (input.Pressed(System.Ui.Key.F5))
 			Play();
 
+		// F11: the running game in the whole window and back; without a game it starts one there
+		if (input.Pressed(System.Ui.Key.F11))
+		{
+			if (Game.Running())
+				_s[0].FullScreen = !_s[0].FullScreen;
+			else
+				PlayFullScreen();
+		}
+
 		if (input.Pressed(System.Ui.Key.S, KeyModifiers.Ctrl))
 			SaveAll();
 
@@ -537,6 +564,15 @@ struct App
 		}
 
 		Shortcuts(ui);
+
+		if (_s[0].HasProject && FullScreen())
+		{
+			DrawFullScreen(ui);
+			DrawDialogs(ui);
+
+			return;
+		}
+
 		DrawMenu(ui);
 
 		if (_s[0].HasProject)
@@ -591,6 +627,9 @@ struct App
 				{
 					if (ui.MenuItem("Spielen ab hier", "F5"))
 						Play();
+
+					if (ui.MenuItem("Starte ab hier (Vollbild)", "F11"))
+						PlayFullScreen();
 
 					if (ui.MenuItem("Spiel beenden", "Shift+F5"))
 						StopGame();
@@ -910,6 +949,33 @@ struct App
 		Map.DrawCanvas(ui, Math.Max(60, height - Unscaled(ui, ui.LastRect().Height) - 8));
 	}
 
+	/// The running game in the whole window: a thin row of buttons (a phone has neither F11 nor Escape), the game below.
+	void DrawFullScreen(Ui ui)
+	{
+		int height = Unscaled(ui, _s[0].FrameHeight);
+
+		using (ui.Row())
+		{
+			if (ui.Button("Vollbild beenden (F11)"))
+				_s[0].FullScreen = false;
+
+			if (ui.Button("Spiel beenden"))
+				StopGame();
+		}
+
+		if (!Game.Running())
+			return;
+
+		int top = Unscaled(ui, ui.LastRect().Y + ui.LastRect().Height);
+		bool wasRunning = Game.Running();
+
+		if (Game.Draw(ui, Math.Max(60, height - top - 12), true) is error e)
+			Say(e.Message);
+
+		if (wasRunning && !Game.Running())
+			StopGame();
+	}
+
 	void DrawGameTab(Ui ui, int height)
 	{
 		using (ui.Row())
@@ -918,6 +984,9 @@ struct App
 			{
 				if (ui.Button("Beenden (Shift+F5)"))
 					StopGame();
+
+				if (ui.Button("Vollbild (F11)"))
+					_s[0].FullScreen = true;
 			}
 			else if (ui.Button("Starten (F5)"))
 				Play();
