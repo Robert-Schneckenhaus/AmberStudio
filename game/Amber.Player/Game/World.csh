@@ -10,6 +10,7 @@ using Amber.Cook;
 using Amber.Pack;
 using Amber.Runtime;
 using Amber.Script.Compilation;
+using Amber.Player.Content;
 using Amber.Player.Graphics;
 using Amber.Player.Tiled;
 
@@ -71,6 +72,8 @@ struct ActorState
 	bool Arrived;
 	int FromX;
 	int FromY;
+	/// The 3D view moved the actor to another cell: Arrived is true in the next tick.
+	bool ArrivePending;
 	ActorArt Art;
 }
 
@@ -220,6 +223,18 @@ struct Actor
 		_s[0].TicksTotal = 0;
 		_s[0].AnimationTicks = 0;
 		_s[0].Grace = 0;
+		_s[0].ArrivePending = false;
+	}
+
+	/// The 3D view: the party walks freely and has crossed into another cell. Like the end of a step, Arrived is true in the
+	/// next tick (enter_tile, leave_tile and step fire).
+	void MoveToCell(int x, int y)
+	{
+		_s[0].FromX = _s[0].TileX;
+		_s[0].FromY = _s[0].TileY;
+		_s[0].TileX = x;
+		_s[0].TileY = y;
+		_s[0].ArrivePending = true;
 	}
 
 	void StartStep(Direction direction)
@@ -248,6 +263,12 @@ struct Actor
 	void Tick()
 	{
 		_s[0].Arrived = false;
+
+		if (_s[0].ArrivePending)
+		{
+			_s[0].ArrivePending = false;
+			_s[0].Arrived = true;
+		}
 
 		if (_s[0].TicksLeft > 0)
 		{
@@ -332,12 +353,14 @@ struct WorldMap
 	List<TileEdit> _tileEdits;
 	List<BlockEdit> _blockEdits;
 	Dictionary<string, TilePoint> Waypoints;
+	/// [0]: the walls of the layer objects block (a 3D map: a wall is a cell, set_tile with 0 opens it).
+	bool[] _wallsBlock;
 
 	static WorldMap Create(TiledMap tiled)
 	{
 		var map = WorldMap
 		{
-			Tiled = tiled, _blocked = new bool[tiled.Width * tiled.Height], _tileEdits = List<TileEdit>.Create(), _blockEdits = List<BlockEdit>.Create(),
+			Tiled = tiled, _wallsBlock = new bool[1], _blocked = new bool[tiled.Width * tiled.Height], _tileEdits = List<TileEdit>.Create(), _blockEdits = List<BlockEdit>.Create(),
 			Waypoints = Dictionary<string, TilePoint>.Create()
 		};
 
@@ -376,7 +399,15 @@ struct WorldMap
 
 	bool IsBlocked(int x, int y)
 	{
-		return x < 0 || y < 0 || x >= Tiled.Width || y >= Tiled.Height || _blocked[y * Tiled.Width + x];
+		if (x < 0 || y < 0 || x >= Tiled.Width || y >= Tiled.Height || _blocked[y * Tiled.Width + x])
+			return true;
+
+		return _wallsBlock[0] && GidOf(GetTile("objects", x, y)) != 0;
+	}
+
+	void SetWallsBlock(bool value)
+	{
+		_wallsBlock[0] = value;
 	}
 
 	void SetBlocked(int x, int y, bool value)
@@ -902,6 +933,8 @@ struct MapRuntime
 	PackedRoutine[] Routines;
 	/// The palette of the map and its palette pictures (set when the game is loaded).
 	MapLook Look;
+	/// The values of the map in tables.yaml: palettes, daylight and the 3D view.
+	MapLookInfo Settings;
 	int Handle;
 
 	static MapRuntime Create(string name, int mapId, string placeName, GameWorld world, PackedMap script)

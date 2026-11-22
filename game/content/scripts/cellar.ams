@@ -11,6 +11,10 @@ map cellar {
   on enter_tile at (6, 8) -> up;
   group up { do { teleport(M.meadow, 19, 5, down, 1); } }
 
+  // down to the crypt (a 3D map)
+  on enter_tile at (12, 8) -> down;
+  group down { do { teleport(M.crypt, 2, 1, right, 1); } }
+
   on enter_tile in (4, 5, 6, 1) -> rats;
   group rats first {
     when not flag(rats_done) do { say(T.rats_appear); battle(G.rats, 0); } then rats_after;

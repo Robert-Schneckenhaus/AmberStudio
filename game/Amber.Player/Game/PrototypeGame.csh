@@ -97,6 +97,8 @@ struct PrototypeGame
 			// the look is part of the map runtime, so it is set before the runtime is copied into the session
 			var runtime = created;
 
+			runtime.Settings = content.MapLooks.GetOrDefault(runtime.Name, MapLookInfo { Palette = 0, Night = 0, Daylight = true, Light = 15 });
+			runtime.World.Map.SetWallsBlock(runtime.Settings.View3D);
 			view.AddWorld(runtime);
 			runtime.Look = try CreateLook(content, runtime, view.ImagesOf(runtime), player);
 			session.Maps.Add(runtime);
@@ -289,6 +291,13 @@ struct PrototypeGame
 		{
 			actual = player.TileX() + "," + player.TileY();
 			expected = (try DebugText(parts, 2)) + "," + (try DebugText(parts, 3));
+		}
+		else if (what == "facing")
+		{
+			string[] names = new string[] { "up", "right", "down", "left" };
+
+			actual = names[(int)player.Facing()];
+			expected = try DebugText(parts, 2);
 		}
 		else if (what == "blocked")
 		{
@@ -536,7 +545,7 @@ struct PrototypeGame
 		// the fight: a click on a monster or T makes it the target
 		if (session.Combat.Active())
 		{
-			if (input.MousePressed(MouseButton.Left))
+			if (input.MousePressed(MouseButton.Left) && !session.View.Is3D())
 				session.Combat.TargetAt(input.MouseX() + session.View.CameraX(), input.MouseY() + session.View.CameraY());
 
 			if (input.Pressed(Key.T))
@@ -585,6 +594,13 @@ struct PrototypeGame
 			return;
 		}
 
+		if (session.View.Is3D())
+		{
+			Move3D(input);
+
+			return;
+		}
+
 		// With one direction key the character walks that way. With a horizontal and a vertical key it walks diagonally; the
 		// key pressed last decides where it looks and, if the corner is blocked, which axis it slides along first.
 		var horizontalKey = input.LatestDown(new Key[] { Key.Left, Key.A, Key.Right, Key.D });
@@ -616,6 +632,38 @@ struct PrototypeGame
 		return;
 	}
 
+	/// The 3D view (3D design, "Bewegung"): up and down walk, left and right turn, Q and E (or A and D) step sideways, all
+	/// for as long as the key is held; Shift runs.
+	void Move3D(InputState input)
+	{
+		var session = Session;
+		int speed = input.IsDown(Key.ShiftLeft) || input.IsDown(Key.ShiftRight) ? Walk3DSpeed * 2 : Walk3DSpeed;
+		int forward = 0;
+		int sideways = 0;
+		int turn = 0;
+
+		if (input.IsDown(Key.Up) || input.IsDown(Key.W))
+			forward += speed;
+
+		if (input.IsDown(Key.Down) || input.IsDown(Key.S))
+			forward -= speed;
+
+		if (input.IsDown(Key.Q) || input.IsDown(Key.A))
+			sideways -= speed;
+
+		if (input.IsDown(Key.E) || input.IsDown(Key.D))
+			sideways += speed;
+
+		if (input.IsDown(Key.Left))
+			turn -= Turn3DSpeed;
+
+		if (input.IsDown(Key.Right))
+			turn += Turn3DSpeed;
+
+		if (forward != 0 || sideways != 0 || turn != 0)
+			session.View.Move3D(forward, sideways, turn);
+	}
+
 	void Interact()
 	{
 		var session = Session;
@@ -623,6 +671,14 @@ struct PrototypeGame
 		var player = world.Player;
 		int x = player.TileX() + DeltaX(player.Facing());
 		int y = player.TileY() + DeltaY(player.Facing());
+
+		if (session.View.Is3D())
+		{
+			var ahead = session.View.CellAhead();
+
+			x = ahead.X;
+			y = ahead.Y;
+		}
 		int started = 0;
 		bool found = false;
 
@@ -653,6 +709,17 @@ struct PrototypeGame
 		var player = world.Player;
 
 		session.TickClock();
+
+		if (session.View.Is3D())
+		{
+			// the companions are the party: the 3D view neither draws them nor bumps into them
+			var companions = List<Actor>.Create();
+
+			foreach (var member in session.Squad.Members)
+				companions.Add(member.Actor);
+
+			session.View.SetHiddenActors(companions);
+		}
 
 		foreach (var brain in session.Brains())
 			brain.Tick(session.Clock.MinuteOfDay());
@@ -686,8 +753,13 @@ struct PrototypeGame
 		var session = Session;
 
 		session.View.Draw(list);
-		session.Squad.Draw(list, session.View.CameraX(), session.View.CameraY());
-		session.Combat.Draw(list, session.View.CameraX(), session.View.CameraY());
+
+		if (!session.View.Is3D())
+		{
+			session.Squad.Draw(list, session.View.CameraX(), session.View.CameraY());
+			session.Combat.Draw(list, session.View.CameraX(), session.View.CameraY());
+		}
+
 		list.AddAll(session.Hud.Items());
 
 		foreach (var bubble in session.Bubbles)
@@ -697,6 +769,10 @@ struct PrototypeGame
 		session.Fade.Draw(list);
 	}
 }
+
+/// The 3D view: walking 1/16 cell per tick (like a step on a 2D map), turning a quarter in 32 ticks.
+const int Walk3DSpeed = 4096;
+const int Turn3DSpeed = 8;
 
 Direction MoveDirection(Key key)
 {
