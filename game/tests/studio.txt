@@ -51,6 +51,27 @@ gamekey Escape
 expect game stopped
 expect tab Karte
 
+# ---- full screen: F11 starts the game in the whole window, F11 switches back and forth, Escape ends the game ---
+hover 12 8
+key F11
+expect game running
+expect fullscreen true
+ticks 20
+shot out/studio_fullscreen.png
+key F11
+expect fullscreen false
+expect tab Spiel
+key F11
+expect fullscreen true
+gamekey Space
+ticks 5
+gamekey Space
+ticks 30
+gamekey Escape
+expect game stopped
+expect fullscreen false
+expect tab Karte
+
 # ---- the database ------------------------------------------------------------------------------
 section items
 expect tab Datenbank

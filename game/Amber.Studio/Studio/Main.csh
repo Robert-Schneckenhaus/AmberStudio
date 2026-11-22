@@ -53,6 +53,7 @@ int Main(string[] args)
 		project = FindProjectFolder();
 
 	bool first = true;
+	string title = "Amber Studio";
 
 	while (!app.QuitRequested() && window.Update())
 	{
@@ -67,6 +68,16 @@ int Main(string[] args)
 		first = false;
 		app.Draw(ui, window.Width(), window.Height());
 		app.AfterFrame();
+
+		// the title tells the web page (scripts/studio-page.sh) to switch the browser to full screen and back
+		string wanted = app.FullScreen() ? "Amber Studio - Vollbild" : "Amber Studio";
+
+		if (wanted != title)
+		{
+			window.SetTitle(wanted);
+			title = wanted;
+		}
+
 		window.Show(ui);
 	}
 

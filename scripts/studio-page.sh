@@ -70,6 +70,25 @@ fit = """
         canvas.dispatchEvent(new PointerEvent("pointermove", { clientX: -1, clientY: -1 }));
     };
     globalThis.addEventListener("resize", () => { if (canvas.classList.contains("shown")) fitCanvas(); });
+    // full screen: the studio puts "Vollbild" in the title while the game fills the window (F11 or the menu); the browser
+    // only switches to full screen in answer to a tap, click or key, so the page follows the title after each of them
+    // (when the browser leaves full screen by itself, with Escape, the page does not ask again until the game leaves it)
+    let declined = false;
+    const followFullScreen = () => {
+        const wanted = document.title.includes("Vollbild");
+        if (!wanted)
+            declined = false;
+        if (wanted && !declined && !document.fullscreenElement && document.documentElement.requestFullscreen)
+            document.documentElement.requestFullscreen().catch(() => {});
+        else if (!wanted && document.fullscreenElement)
+            document.exitFullscreen().catch(() => {});
+    };
+    document.addEventListener("fullscreenchange", () => {
+        if (!document.fullscreenElement && document.title.includes("Vollbild"))
+            declined = true;
+    });
+    for (const name of ["pointerup", "keyup"])
+        globalThis.addEventListener(name, () => { setTimeout(followFullScreen, 60); setTimeout(followFullScreen, 300); });
 """
 marker = "    const files = {};"
 assert marker in page, "unknown page of cshiftc publish"
