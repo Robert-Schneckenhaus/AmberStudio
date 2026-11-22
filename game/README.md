@@ -43,12 +43,24 @@ Das Programm sucht den Ordner mit `game/content/tables.yaml` vom aktuellen Ordne
 
 Bewusst klein; es zeigt alle Teile einmal, und die Tests spielen es durch.
 
-- **Karten:** `content/maps/meadow.tmx` (24×16) und `cellar.tmx` (14×10), Ebenen `ground`, `decor`, `objects`, `over`, `collision`. Das Tileset `example tiles.png` ist selbst gezeichnet (MIT wie das Repository); `scripts/make-example-maps.py` erzeugt Tileset und Karten neu (danach in Tiled oder im Studio bearbeiten, nicht mehr neu erzeugen).
-- **Skripte:** `meadow.ams` (Ankunft, Schild, Ina mit Gespräch und Geben, Treppe in den Keller), `cellar.ams` (Ratten als Kampf, Kiste als Truhe, Treppe hinauf), `screens.ams` (das Verhalten der Screens).
+- **Karten:** `content/maps/meadow.tmx` (24×16), `cellar.tmx` (14×10) und die 3D-Karte `crypt.tmx` (16×13, siehe [3D-Karten](#3d-karten)), Ebenen `ground`, `decor`, `objects`, `over`, `collision`. Das Tileset `example tiles.png` ist selbst gezeichnet (MIT wie das Repository); `scripts/make-example-maps.py` erzeugt Tileset und Karten neu (danach in Tiled oder im Studio bearbeiten, nicht mehr neu erzeugen).
+- **Skripte:** `meadow.ams` (Ankunft, Schild, Ina mit Gespräch und Geben, Treppe in den Keller), `cellar.ams` (Ratten als Kampf, Kiste als Truhe, Treppen hinauf und in die Krypta), `crypt.ams` (Türen, die sich öffnen, Treppe zurück), `screens.ams` (das Verhalten der Screens).
 - **Tabellen:** `content/tables.yaml` mit Start (`start: { map: meadow, x: 12, y: 12 }`), Karten, Held, einer Gefährtin (Ina, Heilerin), einem Zauber, Monstern und Gruppen, Truhen, Wörtern, Gegenständen und Texten.
 - **Ablauf:** das Schild lesen (Wort „Cellar“) → Ina nach dem Keller fragen → die Treppe hinunter → die Ratten besiegen → die Kiste leeren → Ina erneut fragen: sie schließt sich an.
 
 Ohne `characters.yaml` (Figurenpaket) zeichnet der Spieler einfache Figuren, ohne `ui.yaml` schlichte Fenster, ohne `icon_sheet` drei Buchstaben statt Icons.
+
+## 3D-Karten
+
+Eine Karte mit `view: 3d` in `tables.yaml` zeigt der Spieler von innen (`Graphics/Raycaster.csh`, Entwurf „3D-Modus“): ein Raycaster in Festkomma zeichnet die Ansicht (224×144) in Palettenfarben, daneben stehen Kompass und eine kleine Karte der Umgebung. Die Party bewegt sich frei wie in Ambermoon.
+
+- **Ebenen der TMX:** `objects` = Wände (eine Kachel je Feld, 0 = frei; Wände blockieren von selbst), `ground` = Boden, `decor` = Decke, `over` = Billboards (Fässer, Säulen), `collision` = blockierte Felder ohne Wand. Das Raster der Karte bleibt 16×16, die Tilesets haben eigene Kachelgrößen.
+- **Formate wie Ambermoon:** Wände 128×80, Boden und Decke 64×64, Billboards beliebig hoch, die Breite ein Vielfaches von 16. Andere Größen werden gestreckt.
+- **Werte der Karte:** `crypt: { name: Old Crypt, view: 3d, light: 11 }`; `light` 0–15 ist die Grundhelligkeit, `floor: flat` und `ceiling: flat` zeichnen einfarbig, `sky: on` setzt einen Himmel statt der Decke (Städte).
+- **Steuerung:** Pfeil hoch/runter (W/S) laufen, Pfeil links/rechts drehen, Q/E (A/D) seitwärts, Shift rennt, Leertaste untersucht oder spricht an, was vor der Party liegt.
+- **Auslöser:** `enter_tile`, `leave_tile` und `step` feuern beim Überschreiten einer Feldgrenze, `examine` und `speak` gelten für das Feld in Blickrichtung, `facing` für das Viertel, in das der Blick zeigt. Eine Tür ist eine Wand, die `set_tile(2, here, 0)` öffnet.
+- **Platzhalter:** Die Texturen der Krypta zeichnet `scripts/make-example-crypt.py` selbst. Ein Spiel legt seine eigenen Tilesets in denselben Größen daneben, zum Beispiel aus `assets/` (nicht im Repository, siehe `.gitignore`); dort können für eigene Versuche auch exportierte Ambermoon-Texturen liegen.
+- **Noch nicht:** Automap mit gesehenen Feldern, Kampf mit Zielen per Klick, Porträts der Gefährten (die Gefährten sind in 3D unsichtbar), Mauslaufen, `set_light`, feine Position im Spielstand (geladen wird in der Mitte des Feldes).
 
 ## Aus dem Pack
 
@@ -100,7 +112,7 @@ Befehle: `wait N`, `press Key`, `hold Key N` (16 Ticks = ein Feld), `repeat Key 
 | Ordner | Inhalt |
 |---|---|
 | `Platform/` | Plattformschicht: `IPlatform` (Anzeige, Eingabe, Uhr) und die eine Spielschleife `RunGame`, `GlfwPlatform` (Fenster), `HeadlessPlatform` (ohne Fenster), Eingabe und Eingabeskript, Startoptionen, Pfade. Amber Studio ist eine dritte Plattform |
-| `Graphics/` | Software-Renderer (Zeichenliste mit Ebenen, Alpha, Text), Pixelschrift, Kachelbilder mit Platzhaltern, Figuren (Paper Doll oder einfache Figuren) |
+| `Graphics/` | Software-Renderer (Zeichenliste mit Ebenen, Alpha, Text), Pixelschrift, Kachelbilder mit Platzhaltern, Figuren (Paper Doll oder einfache Figuren), Raycaster der 3D-Karten |
 | `Tiled/` | TMX/TSX-Leser und -Schreiber (Wang-Sets, Flip-Flags, Animationen, CSV und Base64/zlib), ein kleiner XML-Leser |
 | `Content/` | Tabellen laden, Skripte kompilieren, Pack kochen und prüfen |
 | `Game/` | Welt, Akteure, NPC-Routinen, Uhr, Party, Kampf, Gefährten, Skript-Host (`PrototypeHost : IGameHost`), `ScreenHost`, `WorldView`, `Ui` (HUD, Sprechblasen, Theme), Spielstände |
