@@ -31,7 +31,7 @@ cshiftc publish game/Amber.Studio --stdlib <CShift>/stdlib -o amberstudio.html
 
 Die HTML-Datei enthält alles und läuft auch direkt von der Platte. „Projekt öffnen…“ öffnet die Ordnerauswahl des Browsers; der gewählte Ordner wird in die Seite kopiert. Es reicht der Inhaltsordner (`game/content`); wer Bilder aus `assets/` braucht, wählt den Ordner darüber.
 
-**Zum Ausprobieren ohne Compiler:** Der Workflow `.github/workflows/pages.yml` baut das Studio mit [scripts/studio-page.sh](../../scripts/studio-page.sh) als Seite auf GitHub Pages, bei jedem Push auf `main`, der das Spiel oder die Bibliotheken ändert. Die Seite öffnet beim Start das Beispielspiel (`game/content`).
+**Zum Ausprobieren ohne Compiler:** Der Workflow `.github/workflows/pages.yml` baut das Studio mit [scripts/studio-page.sh](../../scripts/studio-page.sh) als Seite auf [GitHub Pages](https://robert-schneckenhaus.github.io/AmberStudio/), bei jedem Push auf `main`, der das Spiel oder die Bibliotheken ändert. Die Seite öffnet beim Start das Beispielspiel (`game/content`).
 
 Gespeicherte Dateien bietet der Browser als **Download** an, denn eine Webseite kann den Ordner des Benutzers nicht beschreiben. Die Seite enthält nur das `cshift.js` des Compilers, mit dem sie gebaut wurde. Bis zum nächsten CShift-Release meldet der Browser keine gehaltenen Tasten. Das Spiel behandelt eine Taste dann als gehalten, solange sie sich wiederholt.
 

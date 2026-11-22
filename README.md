@@ -1,8 +1,8 @@
 # Amber Studio
 
-Eine Engine und ein Editor für kachelbasierte 2D-Rollenspiele und Abenteuer von oben: Tiled-Karten, Ereignisse in der Skriptsprache **AmberScript**, Gespräche über Stichwörter, Truhen, Händler, Kampf in Echtzeit mit Gefährten, Tag und Nacht über Paletten, Spielstände. Alles in [CShift](https://github.com/Robert-Schneckenhaus/CShift) geschrieben; es läuft unter Windows und Linux, der Editor auch im Browser, und die Regelmaschine ist auf den Amiga ausgelegt.
+Eine Engine und ein Editor für kachelbasierte Rollenspiele und Abenteuer, von oben und in 3D aus der Ich-Perspektive: Tiled-Karten, Ereignisse in der Skriptsprache **AmberScript**, Gespräche über Stichwörter, Truhen, Händler, Kampf in Echtzeit mit Gefährten, Tag und Nacht über Paletten, Spielstände. Alles in [CShift](https://github.com/Robert-Schneckenhaus/CShift) geschrieben; es läuft unter Windows und Linux, der Editor auch im Browser, und die Regelmaschine ist auf den Amiga ausgelegt.
 
-**Im Browser ausprobieren:** die Seite dieses Repositorys auf GitHub Pages (Amber Studio mit dem Beispielspiel).
+**Im Browser ausprobieren:** [robert-schneckenhaus.github.io/AmberStudio](https://robert-schneckenhaus.github.io/AmberStudio/) (Amber Studio mit dem Beispielspiel).
 
 ## Was drin ist
 
