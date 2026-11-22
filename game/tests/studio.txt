@@ -72,6 +72,25 @@ expect game stopped
 expect fullscreen false
 expect tab Karte
 
+# ---- touch controls (a phone): the cross walks, OK is Space, Esc ends the game -----------------------------------
+touch on
+hover 12 8
+key F11
+expect game running
+ticks 5
+pad Space 1
+ticks 5
+pad Space 1
+ticks 30
+expect game-debug expect modals 0
+pad Up 16
+ticks 2
+expect game-debug expect at 12 7
+shot out/studio_touch.png
+pad Escape 1
+expect game stopped
+touch off
+
 # ---- the database ------------------------------------------------------------------------------
 section items
 expect tab Datenbank

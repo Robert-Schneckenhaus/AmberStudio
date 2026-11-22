@@ -25,6 +25,17 @@ struct GameViewValues
 	bool RightDown;
 	/// Where the picture was drawn in the last frame (pixels of the frame).
 	Rect Screen;
+	/// The touch controls over the picture (a phone has no keys): the key the finger holds, Unknown for none.
+	bool Touch;
+	Amber.Player.Platform.Key TouchKey;
+}
+
+/// A button of the touch controls: while it is held, its key is down for the game.
+struct PadButton
+{
+	Rect Rect;
+	Amber.Player.Platform.Key Key;
+	string Label;
 }
 
 /// A handle.
@@ -43,6 +54,7 @@ struct GameView
 		var values = new GameViewValues[1];
 
 		values[0].Status = "";
+		values[0].Touch = TouchScreen;
 
 		return GameView
 		{
@@ -77,6 +89,113 @@ struct GameView
 		return _game[0];
 	}
 
+	bool Touch()
+	{
+		return _s[0].Touch;
+	}
+
+	void SetTouch(bool on)
+	{
+		_s[0].Touch = on;
+	}
+
+	/// The touch controls over the picture: a cross for walking (and turning in 3D) at the bottom left, the buttons for
+	/// Space (look, talk, next text), Escape and T (target) at the bottom right.
+	List<PadButton> Pad(Rect screen)
+	{
+		var buttons = List<PadButton>.Create();
+		int size = Math.Max(24, screen.Height / 7);
+		int gap = size / 8;
+		int left = screen.X + gap * 2;
+		int bottom = screen.Y + screen.Height - gap * 2;
+		int right = screen.X + screen.Width - gap * 2;
+
+		buttons.Add(PadButton { Rect = Rect.Create(left + size + gap, bottom - 3 * size - 2 * gap, size, size), Key = Amber.Player.Platform.Key.Up, Label = "^" });
+		buttons.Add(PadButton { Rect = Rect.Create(left, bottom - 2 * size - gap, size, size), Key = Amber.Player.Platform.Key.Left, Label = "<" });
+		buttons.Add(PadButton { Rect = Rect.Create(left + 2 * (size + gap), bottom - 2 * size - gap, size, size), Key = Amber.Player.Platform.Key.Right, Label = ">" });
+		buttons.Add(PadButton { Rect = Rect.Create(left + size + gap, bottom - size, size, size), Key = Amber.Player.Platform.Key.Down, Label = "v" });
+		buttons.Add(PadButton { Rect = Rect.Create(right - size * 3 / 2, bottom - size * 3 / 2, size * 3 / 2, size * 3 / 2), Key = Amber.Player.Platform.Key.Space, Label = "OK" });
+		buttons.Add(PadButton { Rect = Rect.Create(right - size * 3 - gap, bottom - size, size, size), Key = Amber.Player.Platform.Key.Escape, Label = "Esc" });
+		buttons.Add(PadButton { Rect = Rect.Create(right - size, bottom - size * 5 / 2 - gap, size, size), Key = Amber.Player.Platform.Key.T, Label = "T" });
+
+		return buttons;
+	}
+
+	/// The touch controls: the button under a held finger (or a tap of this frame) holds its key; returns true if the
+	/// finger is on a button, so that the tap does not also go to the game as a click.
+	bool FeedTouch(UiInput input, Rect screen)
+	{
+		var key = Amber.Player.Platform.Key.Unknown;
+		bool onPad = false;
+
+		if (input.MouseDown || input.MousePressed)
+		{
+			foreach (var button in Pad(screen))
+			{
+				if (button.Rect.Contains(input.MouseX, input.MouseY))
+				{
+					key = button.Key;
+					onPad = true;
+				}
+			}
+		}
+
+		if (key != _s[0].TouchKey)
+		{
+			if (_s[0].TouchKey != Amber.Player.Platform.Key.Unknown)
+				Input.KeyUp(_s[0].TouchKey);
+
+			if (key != Amber.Player.Platform.Key.Unknown)
+				Input.KeyDown(key);
+
+			_s[0].TouchKey = key;
+		}
+
+		return onPad;
+	}
+
+	void DrawPad(Ui ui, Rect screen)
+	{
+		double scale = ui.Scale() > 0.0 ? ui.Scale() : 1.0;
+
+		foreach (var button in Pad(screen))
+		{
+			bool held = button.Key == _s[0].TouchKey;
+			var r = button.Rect;
+
+			ui.FillRect(r, held ? Color.FromArgb(150, 255, 230, 140) : Color.FromArgb(90, 255, 255, 255));
+			ui.FillRect(Rect.Create(r.X, r.Y, r.Width, 2), Color.FromArgb(160, 255, 255, 255));
+			ui.FillRect(Rect.Create(r.X, r.Y + r.Height - 2, r.Width, 2), Color.FromArgb(160, 40, 40, 40));
+			if (button.Label.Length == 1 && "^<>v".Contains(button.Label))
+				DrawArrow(ui, r, button.Label);
+			else
+				ui.DrawText(r.X + r.Width / 2 - (int)((double)(button.Label.Length * 4) * scale), r.Y + r.Height / 2 - (int)(8.0 * scale),
+					button.Label, Color.FromRgb(20, 20, 30));
+		}
+	}
+
+	/// A filled triangle in the middle of a button, pointing the way of ^, <, > or v.
+	void DrawArrow(Ui ui, Rect r, string way)
+	{
+		var color = Color.FromArgb(200, 30, 30, 40);
+		int half = r.Width / 4;
+		int centerX = r.X + r.Width / 2;
+		int centerY = r.Y + r.Height / 2;
+
+		for (var i = 0; i <= half; i += 1)
+		{
+			// i runs from the tip to the base; the line across grows with it
+			if (way == "^")
+				ui.FillRect(Rect.Create(centerX - i, centerY - half / 2 + i, 2 * i + 1, 1), color);
+			else if (way == "v")
+				ui.FillRect(Rect.Create(centerX - i, centerY + half / 2 - i, 2 * i + 1, 1), color);
+			else if (way == "<")
+				ui.FillRect(Rect.Create(centerX - half / 2 + i, centerY - i, 1, 2 * i + 1), color);
+			else
+				ui.FillRect(Rect.Create(centerX + half / 2 - i, centerY - i, 1, 2 * i + 1), color);
+		}
+	}
+
 	/// Starts the game of the project on the map at the cell, at the time of day ("" the start of the game).
 	Error<void> Start(StudioProject project, string map, int x, int y, string time)
 	{
@@ -105,6 +224,7 @@ struct GameView
 		_s[0].Ticks = 0;
 		_s[0].MouseDown = false;
 		_s[0].RightDown = false;
+		_s[0].TouchKey = Amber.Player.Platform.Key.Unknown;
 		_s[0].Status = map.Length > 0 ? "Spiel läuft auf " + map + " bei " + x + ", " + y : "Spiel läuft";
 
 		return;
@@ -216,7 +336,8 @@ struct GameView
 			Input.MouseMoved(x, y);
 		}
 
-		bool inside = screen.Contains(input.MouseX, input.MouseY);
+		bool onPad = _s[0].Touch && FeedTouch(input, screen);
+		bool inside = screen.Contains(input.MouseX, input.MouseY) && !onPad;
 
 		if (input.MousePressed && inside)
 		{
@@ -318,6 +439,9 @@ struct GameView
 
 		if (_frame[0].Width > 0)
 			ui.DrawImage(_frame[0], Rect.Create(0, 0, _frame[0].Width, _frame[0].Height), screen);
+
+		if (_s[0].Touch && _s[0].Running)
+			DrawPad(ui, screen);
 
 		if (!_s[0].Running)
 			ui.DrawText(r.X + 16, r.Y + 16, "Angehalten - F5 startet neu", Color.FromRgb(255, 220, 120));
