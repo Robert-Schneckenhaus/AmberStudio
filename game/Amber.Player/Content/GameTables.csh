@@ -42,7 +42,8 @@ const int GroupNameTable = PackTableFirstGameTable + 12;
 const int FileNameTable = PackTableFirstGameTable + 13;
 /// u16 count, per palette u16 id, u16 size, the name, then size * 3 bytes red, green, blue and size bytes 1 (used) or 0.
 const int PaletteTable = PackTableFirstGameTable + 14;
-/// u16 count, per map u16 map id, u16 palette (0 none), u16 night palette (0 none), u16 flags (bit0 daylight).
+/// u16 count, per map u16 map id, u16 palette (0 none), u16 night palette (0 none), u16 flags (bit0 daylight, bit1 3D view,
+/// bit2 flat floor, bit3 flat ceiling, bit4 sky, bits 8-11 the light of a 3D map).
 const int MapLookTable = PackTableFirstGameTable + 15;
 /// u16 count, per companion u16 id, the key, the name, the role, the look, i16 hp, attack, defense, range, speed, heal,
 /// u16 spellCount and the spell IDs.
@@ -410,7 +411,9 @@ uint8[] WriteMapLooks(Dictionary<string, MapLookInfo> looks, Dictionary<string, 
 		writer.Word(mapIds.GetOrDefault(pair.Key, 0));
 		writer.Word(pair.Value.Palette);
 		writer.Word(pair.Value.Night);
-		writer.Word(pair.Value.Daylight ? 1 : 0);
+		var look = pair.Value;
+
+		writer.Word((look.Daylight ? 1 : 0) | (look.View3D ? 2 : 0) | (look.FlatFloor ? 4 : 0) | (look.FlatCeiling ? 8 : 0) | (look.Sky ? 16 : 0) | ((look.Light & 15) << 8));
 	}
 
 	return writer.ToArray();
@@ -430,7 +433,11 @@ Error<Dictionary<int, MapLookInfo>> ReadMapLooks(uint8[] data)
 		int night = try reader.Word();
 		int flags = try reader.Word();
 
-		looks.Set(map, MapLookInfo { Palette = palette, Night = night, Daylight = (flags & 1) != 0 });
+		looks.Set(map, MapLookInfo
+		{
+			Palette = palette, Night = night, Daylight = (flags & 1) != 0, View3D = (flags & 2) != 0, FlatFloor = (flags & 4) != 0, FlatCeiling = (flags & 8) != 0,
+			Sky = (flags & 16) != 0, Light = (flags >> 8) & 15
+		});
 	}
 
 	return looks;

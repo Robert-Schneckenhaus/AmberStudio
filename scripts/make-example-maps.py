@@ -173,6 +173,7 @@ def cellar():
         m.set("objects", 13, y, "wall", True)
     m.set("objects", 6, 8, "stairs_up")
     m.set("objects", 11, 2, "crate", True)
+    m.set("objects", 12, 8, "stairs_down")
     m.fill("objects", 3, 3, 1, 3, "wall", True)
     m.write(os.path.join(ROOT, "cellar.tmx"))
 

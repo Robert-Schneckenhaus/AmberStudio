@@ -5,9 +5,12 @@
 
 # The maps with the name shown in the HUD; the scripts are in scripts/*.ams, the Tiled maps in maps/*.tmx (made by
 # scripts/make-example-maps.py). daylight: off keeps the colors of a map at every hour (a cellar has its own light).
+# view: 3d shows a map from the inside (scripts/make-example-crypt.py): light 0..15 is its base brightness, floor: flat and
+# ceiling: flat draw them in one color, sky: on puts a sky above the walls (towns).
 maps:
   meadow: Sunny Meadow
   cellar: { name: Old Cellar, daylight: off }
+  crypt: { name: Old Crypt, daylight: off, view: 3d, light: 11 }
 
 # Where a new game starts: the map (default: the first one of maps) and the cell (default: the middle of the map).
 start: { map: meadow, x: 12, y: 12 }
@@ -141,6 +144,14 @@ texts:
     text: "An apple for me? Thank you!"
   cellar_arrival:
     text: "Cool, damp air. Something squeaks in the dark."
+  crypt_arrival:
+    text: "Steps lead down into an old crypt. Arrow keys walk and turn, Q and E step aside, Space looks at what is in front."
+  crypt_door:
+    text: "The old door creaks open."
+  crypt_stairs:
+    text: "You climb back up to the cellar."
+  crypt_bones:
+    text: "The bones of someone who never found the way out."
   rats_appear:
     text: "Two rats scurry out of the shadows!"
   rats_won:

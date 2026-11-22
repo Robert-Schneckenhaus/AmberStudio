@@ -125,6 +125,15 @@ struct MapLookInfo
 	int Palette;
 	int Night;
 	bool Daylight;
+	/// The 3D view (view: 3d): the party walks freely inside the map, which the raycaster draws.
+	bool View3D;
+	/// 3D: the base brightness 0 (dark) to 15 (full light).
+	int Light;
+	/// 3D: floor and ceiling in one color instead of their textures (floor: flat, ceiling: flat).
+	bool FlatFloor;
+	bool FlatCeiling;
+	/// 3D: a sky above the walls instead of a ceiling (towns).
+	bool Sky;
 }
 
 /// The tile layers of a delta, in the order of the layer operand of set_tile (C#: GameContent.layerNames).
@@ -525,7 +534,8 @@ struct ContentSource
 			content.Palettes.Set(try Id(symbols, SymbolKind.Palette, palettes.KeyAt(i)), palette);
 		}
 
-		// a map is "key: display name" or "key: { name: ..., palette: name, night: name, daylight: off }"
+		// a map is "key: display name" or "key: { name: ..., palette: name, night: name, daylight: off }", a 3D map adds
+		// "view: 3d" and optionally "light: 0..15", "floor: flat", "ceiling: flat" and "sky: on"
 		for (var i = 0; i < maps.Count(); i += 1)
 		{
 			string key = maps.KeyAt(i);
@@ -547,7 +557,27 @@ struct ContentSource
 					return error("tables.yaml: daylight of the map '" + key + "' is on or off, not '" + daylight + "'.", (int)ErrorKind.InvalidData);
 
 				look.Daylight = daylight == "on";
+
+				string view = TextOr(entry, "view", "2d");
+
+				if (view != "2d" && view != "3d")
+					return error("tables.yaml: view of the map '" + key + "' is 2d or 3d, not '" + view + "'.", (int)ErrorKind.InvalidData);
+
+				look.View3D = view == "3d";
+
+				string light = TextOr(entry, "light", "15");
+
+				if (TryParseInt(light) is int level && level >= 0 && level <= 15)
+					look.Light = level;
+				else
+					return error("tables.yaml: light of the map '" + key + "' is a number from 0 to 15, not '" + light + "'.", (int)ErrorKind.InvalidData);
+
+				look.FlatFloor = try ChoiceOf(entry, "floor", "textured", "flat", key) == "flat";
+				look.FlatCeiling = try ChoiceOf(entry, "ceiling", "textured", "flat", key) == "flat";
+				look.Sky = try ChoiceOf(entry, "sky", "off", "on", key) == "on";
 			}
+			else
+				look.Light = 15;
 
 			content.MapLooks.Set(key, look);
 		}
@@ -557,6 +587,17 @@ struct ContentSource
 
 		return content;
 	}
+}
+
+/// A value of a map that is one of two words (the first is the default).
+Error<string> ChoiceOf(YamlNode entry, string name, string first, string second, string map)
+{
+	string value = TextOr(entry, name, first);
+
+	if (value != first && value != second)
+		return error("tables.yaml: " + name + " of the map '" + map + "' is " + first + " or " + second + ", not '" + value + "'.", (int)ErrorKind.InvalidData);
+
+	return value;
 }
 
 Error<string> SlotOf(YamlNode item, string key)
