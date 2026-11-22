@@ -4,6 +4,7 @@
 //   amberstudio [--project <folder>]           the window; without a folder the repository around the current folder
 //   amberstudio --test <script> [--project f]  no window: the script drives the studio (see StudioTest.csh)
 //   --browser                                  in a web page (scripts/studio-page.sh): a larger Ui, saved files download
+//   --touch                                    the touch controls over the game (the page passes it on a touch screen)
 
 using System;
 using System.Ui;
@@ -23,6 +24,8 @@ int Main(string[] args)
 		}
 		else if (args[i] == "--browser")
 			BrowserPage = true;
+		else if (args[i] == "--touch")
+			TouchScreen = true;
 		else if (args[i] == "--test" && i + 1 < args.Length)
 		{
 			script = args[i + 1];

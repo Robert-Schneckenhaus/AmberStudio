@@ -651,6 +651,11 @@ struct App
 
 				if (ui.MenuItem("Normale Größe", "Ctrl+0"))
 					_s[0].Zoom = 1.0;
+
+				ui.Separator();
+
+				if (ui.MenuItem(Game.Touch() ? "Steuerkreuz ausblenden" : "Steuerkreuz einblenden"))
+					Game.SetTouch(!Game.Touch());
 			}
 		}
 	}

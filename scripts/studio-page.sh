@@ -52,6 +52,7 @@ style = """
     html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #f2f2f2; }
     header { display: none; }
     canvas, canvas.shown { max-width: none; border-radius: 0; display: block; }
+    canvas { touch-action: none; user-select: none; -webkit-user-select: none; }
     #output { position: fixed; left: 0; right: 0; bottom: 0; max-height: 30vh; margin: 0; width: auto; }
     #output:empty { display: none; }
 """
@@ -95,7 +96,8 @@ assert marker in page, "unknown page of cshiftc publish"
 page = page.replace(marker, fit + marker, 1)
 options = "canvas, files, onOutput: print,"
 assert options in page, "unknown page of cshiftc publish"
-page = page.replace(options, options + ' args: ["--browser"],', 1)
+# on a touch screen (a phone) the game shows its touch controls
+page = page.replace(options, options + ' args: ["--browser"].concat(navigator.maxTouchPoints > 0 ? ["--touch"] : []),', 1)
 hook = "onWindow: (width, height, title) => {"
 assert hook in page, "unknown page of cshiftc publish"
 page = page.replace(hook, hook + "\n                fitCanvas();", 1)

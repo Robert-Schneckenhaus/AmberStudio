@@ -12,6 +12,7 @@
 //   tool NAME | layer N | gid N            map tools: paint, erase, pick, terrain
 //   hover X Y | paint X Y [X2 Y2]          the mouse over a cell of the map | a stroke from one cell to another
 //   ticks N | gamekey NAME     the game: N ticks (no clock) | a key pressed for one tick
+//   touch on|off | pad KEY N   the touch controls | a finger on the button of a key (Up, Space ...) for N ticks
 //   section NAME | record KEY | setfield FIELD VALUE | addrecord KEY | removerecord | usage
 //   npc NAME | entry N | settext KEY TEXT | addtopic WORD | CONDITION | TEXT | removeentry
 //   save | undo | redo | check | dump (prints the entry of the database that is chosen)
@@ -319,6 +320,46 @@ struct StudioTest
 			App.Game.Input.KeyUp(key);
 			App.Game.Render();
 			Run(Input());
+		}
+		else if (c == "touch")
+		{
+			App.Game.SetTouch(p.Length > 1 && p[1] == "on");
+			Run(Input());
+		}
+		else if (c == "pad")
+		{
+			// "pad Up 16": the finger on a button of the touch controls for N ticks of the game, then off again
+			var key = EngineKey(UiKeyNamed(p[1]));
+			bool found = false;
+
+			foreach (var button in App.Game.Pad(App.Game.ScreenRect()))
+			{
+				if (button.Key != key || found)
+					continue;
+
+				found = true;
+
+				int x = button.Rect.X + button.Rect.Width / 2;
+				int y = button.Rect.Y + button.Rect.Height / 2;
+
+				Press(x, y);
+
+				for (var i = 0; i < Number(p, 2); i += 1)
+				{
+					if (App.Game.Tick() is error e)
+					{
+						Fail("game: " + e.Message);
+
+						break;
+					}
+				}
+
+				App.Game.Render();
+				Release(x, y);
+			}
+
+			if (!found)
+				Fail("the touch controls have no button for " + p[1]);
 		}
 		else if (c == "section")
 		{

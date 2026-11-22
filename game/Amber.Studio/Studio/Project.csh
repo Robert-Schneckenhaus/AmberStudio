@@ -127,6 +127,9 @@ struct StudioProject
 /// Set by --browser (the page of scripts/studio-page.sh passes it).
 bool BrowserPage = false;
 
+/// Set by --touch (the page passes it on a touch screen): the game shows its touch controls.
+bool TouchScreen = false;
+
 /// True in a browser page: --browser, or the folder the browser copies the user's files to exists.
 bool RunsInBrowser()
 {
